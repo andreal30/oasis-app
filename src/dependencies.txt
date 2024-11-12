@@ -1,0 +1,22 @@
+Listado de dependencias (node):
+
+- express (framework para construir nuestro servidor API)
+- mongoose (base de datos con mongoDB, modelos, schemas y la conexion a la BDD)
+- cors (integracion front-end) (para resolver problema de comunicacion con el frontend, ORIGENES DISTINTOS)
+- bcrypt (para hashear las contrasenas)   
+- jsonwebtoken (para manejar la autenticacion)    
+- dotenv (variables de ambiente) (en lugar de usar dotenv, pueden trabajar con variables de ambiente nativas de node, donde ya no es necesario dependencias externas)
+
+React:
+- vite
+- react-router 
+- react-dom
+- react-router-dom
+- formik (?)
+- yup
+- styled-components (maybe)
+- react-time-ago
+- javascript-time-ago
+
+search:
+- @commitlint/config-conventional
