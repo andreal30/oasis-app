@@ -12,7 +12,7 @@ const validationSchema = UserSchema({
   email: true,
 });
 
-const ForgotPassword = () => {
+const ForgotPasswordPage = () => {
   const [serverMessage, setServerMessage] = useState(null);
   const [serverError, setServerError] = useState(null);
   const navigate = useNavigate();
@@ -124,4 +124,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ForgotPasswordPage;
