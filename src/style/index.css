@@ -64,6 +64,16 @@
   --success-light: #a8f2cb;
   --success-dark: #067a51;
 
+  /* Warning */
+  --warning: #ed9f13;
+  --warning-light: #f9e68e;
+  --warning-dark: #bc5d10;
+
+  /* Info */
+  --info: #10b9bc;
+  --info-light: #97f8f1;
+  --info-dark: #0c7479;
+
   /* Primary Colors */
   --primary-color: #10bcae; /* main-500 */
   --primary-color-text: #ffffff;

@@ -9,14 +9,14 @@ import {
 import "./style/index.css";
 import "./style/custompanel.css";
 import ErrorPage from "./pages/ErrorPage"; // Correct extension
-import ResetPassword from "./pages/ResetPassword";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import FavouritesPage from "./pages/FavouritesPage";
 import NewFlatPage from "./pages/NewFlatPage";
 import LoginPage from "./pages/LoginPage";
 import RootLayout from "./pages/RootLayout";
-import ForgotPassword from "./pages/ForgotPassword";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import RegisterPage from "./pages/RegisterPage";
 
 // Router Configuration
@@ -33,8 +33,8 @@ const router = createBrowserRouter([
           { path: "/", element: <LoginPage /> }, // Default Login Page
           { path: "/login", element: <LoginPage /> },
           { path: "/register", element: <RegisterPage /> },
-          { path: "/forgot-password", element: <ForgotPassword /> },
-          { path: "/reset-password/:token", element: <ResetPassword /> },
+          { path: "/forgot-password", element: <ForgotPasswordPage /> },
+          { path: "/reset-password/:token", element: <ResetPasswordPage /> },
         ],
       },
       {
