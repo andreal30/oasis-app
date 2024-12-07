@@ -1,0 +1,85 @@
+<GeneralInput
+    id="email"
+    name="email"
+    value={formik.values.email}
+    onChange={formik.handleChange}
+    iconClass="pi pi-at text-500"
+    label="Email"
+/>
+id: string
+name: string
+value: string, number, null (formik.values)
+onChange: funcion (casi siempre formik)
+iconClass: string (pi pi-{iconClass}) - puede ser mas de uno con espacios para separar
+label: string
+type: "text", "number", "email"
+className: string (opcional) - puede ser mas de uno con espacios para separar
+disabled: boolean (opcional)
+
+
+<PasswordInput
+  id="id"
+  name="name"    
+  onChange={formik.handleChange}
+  iconClass="iconClass"
+  label="label"
+  disabled=true/false
+/>
+id: string
+  name: string
+  value: string
+  onChange: function
+  iconClass: string
+  label: string
+  disabled: boolean (opcional)
+
+
+<MainButton
+      label="label"
+      icon=true/false
+      className="classes"
+      type="type"
+      onClick={function}
+      disabled=true/false
+      rounded
+      size="size"
+      outlined=true/false
+/>
+label: string.isRequired,
+  icon: boolean - default false (no se deberia mostrat iconos)
+  iconClass: string (si no pones nada no se va a mostrar, solo tienes que completar con el especifico de cada icono. Ej: home, at, map, etc. Busca prime icons)
+  className: string (opcional) (clase para boton secundario: btn-secondary)
+  type: string - default submit
+  onClick: function
+  disabled: boolean - default false
+  size: default - normal (small, normal, large)
+  outlined: boolean - default false 
+
+
+<IconButton
+      label="label"
+      className="classes"
+      type="type"
+      onClick={function}
+      disabled=true/false
+      rounded
+      size="size"
+      outlined=true/false
+  />
+
+//Poner como error debajo de cada input, y linkear a cada input formik.errors.{input}
+     {formik.touched.email && formik.errors.email ? (
+      <MessageErrors
+        touched={formik.touched.email}
+        error={formik.errors.email}
+      />
+    ) : (
+    <div className='mt-0'></div>
+  )}
+
+//Mensajes de error, success, info, warning
+<Messages 
+  severity='error/success,info,warning' 
+  text={serverError} 
+/>
+

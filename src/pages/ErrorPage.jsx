@@ -1,5 +1,13 @@
-const ErrorPage = () => {
-    return <h1>Error Page</h1>
-}
+import { useRouteError } from "react-router-dom";
 
-export default ErrorPage
+const ErrorPage = () => {
+  const error = useRouteError();
+  return (
+    <div>
+      <h1>Error</h1>
+      <p>{error.statusText || "An unexpected error occurred."}</p>
+    </div>
+  );
+};
+
+export default ErrorPage;

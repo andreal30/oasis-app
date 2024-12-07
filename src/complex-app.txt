@@ -1,0 +1,117 @@
+import React, { Suspense, lazy } from 'react';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  redirect,
+  useLoaderData,
+  useRouteError,
+} from 'react-router-dom';
+
+// Lazy-loaded components
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const HomePage = lazy(() => import('./pages/HomePage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const FavouritesPage = lazy(() => import('./pages/FavouritesPage'));
+const UpdateFlatsPage = lazy(() => import('./pages/UpdateFlatsPage'));
+const CreateFlatPage = lazy(() => import('./pages/CreateFlatPage'));
+
+// Root-level loader to check authentication
+const authLoader = async () => {
+  const response = await fetch('/api/check-auth', { credentials: 'include' });
+  if (response.status === 401) {
+    return { isAuthenticated: false };
+  }
+  return { isAuthenticated: true, user: await response.json() };
+};
+
+// Error Page
+const ErrorPage = () => {
+  const error = useRouteError();
+  return (
+    <div>
+      <h1>Error</h1>
+      <p>{error.statusText || 'An unexpected error occurred.'}</p>
+    </div>
+  );
+};
+
+// RootPage Layout (Private Routes)
+const RootPage = () => (
+  <>
+    <Header />
+    <main>
+      <Outlet />
+    </main>
+    <Footer />
+  </>
+);
+
+// Public Layout
+const PublicLayout = () => <Outlet />;
+
+// Private Route Wrapper
+const PrivateRoute = () => {
+  const { isAuthenticated } = useLoaderData();
+  if (!isAuthenticated) {
+    return redirect('/login');
+  }
+  return <Outlet />;
+};
+
+// Router Configuration
+const router = createBrowserRouter([
+  {
+    path: '/',
+    loader: authLoader,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        // Public Routes Layout
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <PublicLayout />
+          </Suspense>
+        ),
+        children: [
+          { path: "/", element: <LoginPage /> }, // Default Login Page
+          { path: "/login", element: <LoginPage /> },
+          { path: '/register', element: <RegisterPage /> },
+          { path: '/forgot-password', element: <ForgotPassword /> },
+          { path: '/reset-password/:token', element: <ResetPassword /> },
+        ],
+      },
+      {
+        // Private Routes Layout with Header and Footer
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <PrivateRoute />
+          </Suspense>
+        ),
+        children: [
+          {
+            element: <RootPage />, // Apply Header and Footer only here
+            children: [
+              { path: "/", element: <HomePage /> }
+              { path: "/home", element: <HomePage /> }, // Home Page
+              { path: '/profile', element: <ProfilePage /> },
+              { path: '/favourites', element: <FavouritesPage /> },
+              { path: '/update-flats', element: <UpdateFlatsPage /> },
+              { path: '/create-flat', element: <CreateFlatPage /> },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]);
+
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
