@@ -30,4 +30,4 @@
 <!-- Prevent Cross-Site Scripting (XSS) Attacks -->
 <IfModule mod_headers.c>
     Header set X-XSS-Protection "1; mode=block"
-</IfModule>
+</IfModule> 
