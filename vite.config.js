@@ -9,4 +9,8 @@ export default defineConfig({
   build: {
     outDir: "dist", // Ensure this matches where you expect files to be output
   },
+  server: {
+    host: true, // Allows the server to be accessible from an external network
+    port: 5173, // Optional: specify a custom port
+  },
 });
