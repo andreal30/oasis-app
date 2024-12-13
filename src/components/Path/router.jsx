@@ -1,13 +1,13 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import ErrorPage from "../../pages/ErrorPage";
 import HomePage from "../../pages/HomePage";
-import ResetPassword from "../../pages/ResetPassword";
+import ResetPasswordPage from "../../pages/ResetPasswordPage";
 import ProfilePage from "../../pages/ProfilePage";
 import FavouritesPage from "../../pages/FavouritesPage";
 import NewFlatPage from "../../pages/NewFlatPage";
 import LoginPage from "../../pages/LoginPage";
 import RootLayout from "../../pages/RootLayout";
-import ForgotPassword from "../../pages/ForgotPassword";
+import ForgotPasswordPage from "../../pages/ForgotPasswordPage";
 import RegisterPage from "../../pages/RegisterPage";
 import { AuthProvider } from "../../contexts/authContext";
 
@@ -28,8 +28,8 @@ const router = createBrowserRouter([
           { path: "/", element: <LoginPage /> },
           { path: "/login", element: <LoginPage /> },
           { path: "/register", element: <RegisterPage /> },
-          { path: "/forgot-password", element: <ForgotPassword /> },
-          { path: "/reset-password/:token", element: <ResetPassword /> },
+          { path: "/forgot-password", element: <ForgotPasswordPage /> },
+          { path: "/reset-password/:token", element: <ResetPasswordPage /> },
         ],
       },
       {
