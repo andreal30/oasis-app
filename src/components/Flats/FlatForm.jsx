@@ -1,10 +1,10 @@
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { Input, Checkbox, Button } from 'shared-components'; // Assuming these are the shared components
+import { Input, Checkbox, Button } from 'shared-components';
 import PropTypes from 'prop-types';
 
-const FlatForm = ({ flatId }) => {
+const FlatForm = () => {
     const initialValues = {
         city: '',
         streetName: '',
@@ -29,13 +29,8 @@ const FlatForm = ({ flatId }) => {
 
     const handleSubmit = async (values) => {
         try {
-            if (flatId) {
-                // Connect with your Node backend to update a flat
-                await axios.put(`/flats/${flatId}`, values);
-            } else {
-                // Connect with your Node backend to create a new flat
-                await axios.post('/flats', values);
-            }
+            // Connect with your Node backend to create a new flat
+            await axios.post('/flats', values);
             alert('Form submitted successfully');
         } catch (error) {
             console.error('Error submitting form:', error);
