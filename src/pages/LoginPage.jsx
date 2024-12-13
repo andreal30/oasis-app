@@ -1,27 +1,14 @@
-import { FloatLabel } from "primereact/floatlabel";
-import GeneralInput from "../components/Commons/Inputs/GeneralInput";
-import { InputText } from "primereact/inputtext";
+import LoginForm from "../components/Users/LoginForm";
 
 const LoginPage = () => {
   return (
     <>
-      <GeneralInput
-        id='email'
-        name='email'
-        value=' '
-        onChange={(e) => console.log(e.target.value)}
-        iconClass='pi pi-at text-500'
-        label='Email'
-      />
-      <br />
-      <FloatLabel>
-        <InputText
-          id='username'
-          value=' '
-          onChange={(e) => setValue(e.target.value)}
-        />
-        <label htmlFor='username'>Username</label>
-      </FloatLabel>
+      <div className='flex justify-center items-center h-screen'>
+        <div className='w-96 p-5 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
+          <h1 className='text-2xl font-bold text-center mb-5'>Login</h1>
+          <LoginForm />
+        </div>
+      </div>
     </>
   );
 };
