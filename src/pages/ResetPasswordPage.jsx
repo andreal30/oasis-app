@@ -13,7 +13,7 @@ const validationSchema = UserSchema({
   confirmPassword: true,
 });
 
-const ResetPassword = () => {
+const ResetPasswordPage = () => {
   const [serverMessage, setServerMessage] = useState(null);
   const [serverError, setServerError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -152,4 +152,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ResetPasswordPage;
