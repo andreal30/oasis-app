@@ -16,6 +16,7 @@ const validationSchema = UserSchema({
 const ResetPassword = () => {
   const [serverMessage, setServerMessage] = useState(null);
   const [serverError, setServerError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { token } = useParams();
 
@@ -27,6 +28,7 @@ const ResetPassword = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
+      setLoading(true);
       setServerError(null);
       setServerMessage(null);
 
@@ -69,6 +71,8 @@ const ResetPassword = () => {
               "An unexpected error occurred. Please try again."
           );
         }
+      } finally {
+        setLoading(false);
       }
     },
   });
@@ -113,25 +117,29 @@ const ResetPassword = () => {
             name='password'
             value={formik.values.password}
             onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
             label='New password'
+            disabled={loading}
           />
-          <MessageErrors
-            touched={formik.touched.password}
-            error={formik.errors.password}
-          />
+          {formik.touched.password && formik.errors.password && (
+            <MessageErrors
+              touched={formik.touched.password}
+              error={formik.errors.password}
+            />
+          )}
           <PasswordInput
             id='confirmPassword'
             name='confirmPassword'
             value={formik.values.confirmPassword}
             onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
             label='Confirm password'
+            disabled={loading}
           />
-          <MessageErrors
-            touched={formik.touched.confirmPassword}
-            error={formik.errors.confirmPassword}
-          />
+          {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+            <MessageErrors
+              touched={formik.touched.confirmPassword}
+              error={formik.errors.confirmPassword}
+            />
+          )}
 
           <MainButton label='Ready, Set, Password!' type='submit' />
         </form>

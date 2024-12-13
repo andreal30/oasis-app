@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import validateUnique from "../../api/ValidateUnique";
+import { validateUnique } from "../../services/userService";
 
 // Reusable Yup schema generator for dynamic validation
 const UserSchema = ({
@@ -7,7 +7,9 @@ const UserSchema = ({
   uniqueEmail = false,
   username = false,
   uniqueUsername = false,
+  emailOrUsername = false, // New field for email or username
   password = false,
+  newPassword = false,
   confirmPassword = false,
   name = false,
   birthDate = false,
@@ -15,12 +17,13 @@ const UserSchema = ({
 } = {}) => {
   const schemaFields = {};
 
+  // Email validation
   if (email) {
     schemaFields.email = Yup.string()
       .email(
         "Uh-oh! That doesn’t look like a valid email. Mind double-checking?"
       )
-      .required("We’ll need your email to stay in touch!");
+      .required("Email is required!");
   } else if (uniqueEmail) {
     schemaFields.email = Yup.string()
       .email(
@@ -37,6 +40,7 @@ const UserSchema = ({
       );
   }
 
+  // Username validation
   if (username) {
     schemaFields.username = Yup.string()
       .min(
@@ -81,8 +85,36 @@ const UserSchema = ({
       );
   }
 
+  // Email or Username validation
+  if (emailOrUsername) {
+    schemaFields.emailOrUsername = Yup.string()
+      .required("Please provide either your email or username!")
+      .test(
+        "email-or-username",
+        "Doesn’t look like a valid email or username. Double-check?",
+        (value) =>
+          /^[a-zA-Z0-9_]+$/.test(value) ||
+          /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)
+      );
+  }
+
+  // Password validation
   if (password) {
     schemaFields.password = Yup.string()
+      .min(
+        8,
+        "Remember, your password should be at least 8 characters long to keep it secure!"
+      )
+      .max(
+        100,
+        "Wow, that’s a long password! Let’s keep it under 100 characters, okay?"
+      )
+      .required("Enter your password to access your account.");
+  }
+
+  // New Password validation
+  if (newPassword) {
+    schemaFields.newPassword = Yup.string()
       .min(
         8,
         "Your password needs to be at least 8 characters long. Stronger is better!"
@@ -95,18 +127,20 @@ const UserSchema = ({
         /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]{8,}$/,
         "For extra safety, include at least one letter, one number, and one special character!"
       )
-      .required("Don’t forget to set a password! It’s important for security.");
+      .required("Please set a strong password for your account.");
   }
 
+  // Confirm Password validation
   if (confirmPassword) {
     schemaFields.confirmPassword = Yup.string()
       .oneOf(
-        [Yup.ref("password"), null],
+        [Yup.ref("password"), Yup.ref("newPassword"), null],
         "Oops! The passwords don’t match. Try again!"
       )
-      .required("Let’s confirm that password to be sure!");
+      .required("Confirm your password to proceed.");
   }
 
+  // Name validation
   if (name) {
     schemaFields.firstName = Yup.string()
       .min(2, "First names with at least 2 characters are the way to go!")
@@ -119,12 +153,14 @@ const UserSchema = ({
       .required("And your last name? Let’s make it official!");
   }
 
+  // Birthdate validation
   if (birthDate) {
     schemaFields.birthDate = Yup.date()
       .typeError("Hmm, that doesn’t seem like a valid date. Let’s try again!")
       .required("We need your birth date to get to know you better!");
   }
 
+  // Terms validation
   if (terms) {
     schemaFields.terms = Yup.boolean()
       .oneOf(
