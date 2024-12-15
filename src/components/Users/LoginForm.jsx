@@ -110,7 +110,7 @@ const LoginForm = () => {
         )}
         {/* Button */}
         {loading ? (
-          <Skeleton width='100%' height='3rem' />
+          <Skeleton width='100%' height='3rem' borderRadius='20px' />
         ) : (
           <MainButton
             label='Log In'

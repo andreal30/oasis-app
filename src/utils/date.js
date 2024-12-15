@@ -22,3 +22,10 @@ export const formatDateInWords = (date) => {
     ? format(parsedDate, "d MMMM, yyyy")
     : "Invalid Date";
 };
+
+export const calculateAge = (birthday) => {
+  if (!birthday) return 0;
+  const diff = Date.now() - birthday.getTime();
+  const ageDate = new Date(diff);
+  return Math.abs(ageDate.getUTCFullYear() - 1970);
+};

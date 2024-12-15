@@ -3,23 +3,77 @@
   left: 3rem;
 }
 
+.pr-1-5 {
+  padding-right: 1.5rem !important;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.overflow-y {
+  overflow-y: scroll;
+}
+
+.overflow-x {
+  overflow-x: scroll;
+}
+
+.max-h-75vh {
+  max-height: 75vh;
+}
+
+.min-h-75vh {
+  min-height: 75vh;
+}
+
+.max-h-50vh {
+  max-height: 50vh;
+}
+
+.min-h-50vh {
+  min-height: 50vh;
+}
+
+.max-w-100 {
+  max-width: 100%;
+}
+
+.min-w-100 {
+  min-width: 100%;
+}
+
 /* Input */
 
-.input-main {
+.input-main,
+.input-password .p-icon-field-right .p-password-input.p-inputtext,
+.input-number .p-inputnumber-input {
   border: 1.5px solid var(--input-border-color);
   border-radius: 30px;
   background-color: var(--input-bg);
   box-shadow: none;
   transition: all 0.3s ease-in-out;
   font-family: var(--font-family);
+  width: 100%;
 }
-.input-main:hover {
+.input-main:hover,
+.input-password .p-icon-field-right .p-password-input.p-inputtext:hover,
+.input-number .p-inputnumber-input:hover {
   border-color: var(--input-hover-border);
 }
-.input-main:focus {
+.input-main:focus,
+.input-password .p-icon-field-right .p-password-input.p-inputtext:enabled:focus,
+.input-number .p-inputnumber-input:enabled:focus {
   border-color: var(--input-focus-border);
   outline: none;
   box-shadow: none;
+}
+.input-number.left-3 .p-inputnumber-input {
+  padding-inline-start: 2.25rem;
 }
 .input-error {
   border-color: var(--input-error-border);
@@ -31,14 +85,22 @@ input:-webkit-autofill {
   transition: all 0.3s ease-in-out;
 }
 
-.input-main .p-icon-field-right {
+.input-main .p-icon-field-right,
+.input-password .p-icon-field-right {
   width: 100%;
   border-radius: 30px;
 }
-.input-main .p-icon-field-right .p-password-input {
+.input-password .p-icon-field-right .p-password-input {
   padding-left: 2.75rem;
-  width: 100%;
-  border-radius: 30px;
+}
+
+.p-selectbutton .p-button.p-highlight {
+  background-color: var(--button-bg);
+  border-color: var(--buttonbg);
+}
+.p-selectbutton .p-button.p-highlight:hover {
+  background-color: var(--button-hover-bg);
+  border-color: var(--button-hover-bg);
 }
 
 /* Label */
@@ -57,12 +119,18 @@ input:-webkit-autofill {
   left: 2.25rem;
 }
 
+/* Input icon */
+.calendar-icon {
+  margin-right: -50.13px;
+  border: none;
+}
+
 /* Buttons */
 .my-btn {
   background-color: var(--button-bg);
   color: var(--button-text-color);
   border: none;
-  border-radius: 20px;
+  border-radius: 30px;
   padding: 0.5rem 1rem;
   cursor: pointer;
   outline: none;
@@ -87,7 +155,7 @@ input:-webkit-autofill {
   background-color: var(--button-secondary-bg);
   color: var(--button-secondary-text-color);
   border: none;
-  border-radius: 20px;
+  border-radius: 30px;
   padding: 0.5rem 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -114,8 +182,23 @@ input:-webkit-autofill {
   transition: all 0.3s ease-in-out;
   background-color: var(--gray-0);
 }
-.btn-link:hover {
+.btn-link:hover,
+.btn-link:active,
+.btn-link:focus {
   background-color: var(--gray-50);
+  color: var(--main-500);
+}
+
+.p-fileupload-buttonbar .p-fileupload-choose.p-button {
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text-color);
+  border: none;
+  border-radius: 30px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  outline: none;
+  box-shadow: none;
+  transition: background-color 0.3s;
 }
 
 /* Card */
@@ -127,4 +210,42 @@ input:-webkit-autofill {
 }
 .card-main:hover {
   box-shadow: var(--shadow-2);
+}
+
+/* Input switch */
+.p-inputswitch:not(.p-disabled):has(.p-inputswitch-input:hover)
+  .p-inputswitch-slider {
+  background-color: var(--gray-200);
+  border-color: var(--gray-200);
+}
+.p-inputswitch.p-highlight .p-inputswitch-slider {
+  background: var(--main-500);
+  border-color: var(--main-500);
+}
+
+/* Profile image */
+.profile-img img {
+  height: 10rem;
+  border-radius: 20px;
+}
+
+/* Dialog */
+.dialog-form {
+  width: 75vw;
+  min-width: 300px;
+  max-width: 650px;
+}
+
+.p-dialog.dialog-form .p-dialog-header {
+  border-top-right-radius: 20px;
+  border-top-left-radius: 20px;
+}
+.p-dialog .p-dialog-content:last-of-type {
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+.p-dialog-content::-webkit-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  display: none;
 }

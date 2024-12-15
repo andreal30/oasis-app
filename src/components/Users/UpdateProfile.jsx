@@ -1,5 +1,12 @@
-const UpdateProfile = () => {
-    return <h1>Update Profile</h1>
-}
+import UserForm from "./UserForm";
 
-export default UpdateProfile
+const UpdateProfile = () => {
+  return (
+    <>
+      <h1>Update Profile</h1>
+      <UserForm />
+    </>
+  );
+};
+
+export default UpdateProfile;

@@ -1,5 +1,12 @@
-const UpdateProfilePage = () => {
-    return <h1>Update Profile Page</h1>
-}
+import UserForm from "../components/Users/UserForm";
 
-export default UpdateProfilePage
+const UpdateProfilePage = () => {
+  return (
+    <>
+      <h1>Update Profile Page</h1>
+      <UserForm />
+    </>
+  );
+};
+
+export default UpdateProfilePage;

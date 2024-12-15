@@ -34,12 +34,12 @@ const PasswordInput = ({
   return (
     <FloatLabel>
       <IconField iconPosition='left' className='w-full text-400'>
-        <InputIcon className='pi pi-lock text-400 z-5'> </InputIcon>
+        <InputIcon className='pi pi-lock text-400 z-5 pl-1'> </InputIcon>
         <Password
           inputId={id}
           name={name}
           value={value}
-          className='w-full input-main'
+          className='w-full input-password'
           onChange={onChange}
           disabled={disabled}
           autoComplete={autoComplete}

@@ -10,9 +10,7 @@ import {
 export const loginUser = async (emailOrUsername, password) => {
   try {
     const response = await loginApi(emailOrUsername, password); // response is already `response.data`
-
     const { token } = response; // Access token directly from `response`
-
     if (!token) {
       console.error("No token received from login API.");
       throw new Error("Login failed: No token provided.");
@@ -37,7 +35,17 @@ export const LogoutUser = async () => {
 };
 
 export const registerUser = (userData) => {
-  return registerApi(userData); // Directly call API (no extra logic needed here)
+  try {
+    const response = registerApi(userData); // response is already `response.data`
+    console.log("1. REGISTER USER Registration response:", response);
+    return response;
+  } catch (error) {
+    console.error(
+      "Registration failed:",
+      error.response?.data?.message || error.message
+    );
+    throw error;
+  }
 };
 
 export const forgotPasswordUser = (email) => {

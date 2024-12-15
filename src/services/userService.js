@@ -9,10 +9,14 @@
 // };
 
 import {
-  fetchAllUsersApi,
+  allowAdminApi,
+  deleteProfileImageApi,
+  deleteUserApi,
+  denyAdminApi,
+  getAllUsersApi,
   getUserByIdApi,
-  getUserEmailApi,
   updateUserProfileApi,
+  uploadProfileImageApi,
   validateUniqueApi,
 } from "../api/userApi";
 
@@ -21,6 +25,28 @@ export const validateUnique = async (field, value) => {
     return await validateUniqueApi(field, value);
   } catch (error) {
     console.error("Error validating uniqueness:", error);
+    throw error;
+  }
+};
+
+export const uploadProfileImage = async (profileFile) => {
+  try {
+    const formData = new FormData();
+    formData.append("profileImage", profileFile);
+    const { data } = await uploadProfileImageApi(formData);
+    return data.downloadURL; // Extract the image URL from API response
+  } catch (error) {
+    console.error("Error uploading profile image:", error);
+    throw error;
+  }
+};
+
+export const deleteProfileImage = async (imageUrl) => {
+  try {
+    const response = await deleteProfileImageApi(imageUrl);
+    return response.data.message; // Return the success message
+  } catch (error) {
+    console.error("Error deleting profile image:", error);
     throw error;
   }
 };
@@ -35,9 +61,9 @@ export const updateUserProfile = async (userId, updatedData) => {
   }
 };
 
-export const fetchAllUsers = async () => {
+export const getAllUsers = async () => {
   try {
-    const users = await fetchAllUsersApi();
+    const users = await getAllUsersApi();
     return users;
   } catch (error) {
     console.error("Error fetching all users:", error);
@@ -55,15 +81,65 @@ export const getUserById = async (userId) => {
   }
 };
 
-export const getUserByEmail = async (email) => {
+export const deleteUser = async (userId) => {
   try {
-    const response = await getUserEmailApi(email);
+    const response = await deleteUserApi(userId);
     return response.data;
   } catch (error) {
-    console.error("Error fetching user by email:", error);
+    console.error("Error deleting user:", error);
     throw error;
   }
 };
+
+export const allowAdmin = async (userId) => {
+  try {
+    const response = await allowAdminApi(userId);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching admin data:", error);
+    throw error;
+  }
+};
+
+export const denyAdmin = async (userId) => {
+  try {
+    const response = await denyAdminApi(userId);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching admin data:", error);
+    throw error;
+  }
+};
+
+export const resetFiltersAndSorting = async () => {
+  const response = await getAllUsersApi();
+  if (!response.ok) throw new Error("Failed to reset filters and sorting");
+  return await response.json();
+};
+
+export const filterAndSortUsers = async (filters, sortOptions) => {
+  const queryParams = new URLSearchParams({
+    ...filters,
+    ...sortOptions,
+  }).toString();
+  const response = await getAllUsersApi(queryParams);
+  if (!response.ok) throw new Error("Failed to filter and sort users");
+  return await response.json();
+};
+
+// export const filterUsers = async (filters) => {
+//   const queryParams = new URLSearchParams(filters).toString();
+//   const response = await fetch(`/api/users/filter?${queryParams}`);
+//   if (!response.ok) throw new Error("Failed to filter users");
+//   return await response.json();
+// };
+
+// export const sortUsers = async (sortField, sortOrder) => {
+//   const queryParams = new URLSearchParams({ sortField, sortOrder }).toString();
+//   const response = await fetch(`/api/users/sort?${queryParams}`);
+//   if (!response.ok) throw new Error("Failed to sort users");
+//   return await response.json();
+// };
 
 // export const fetchAdminData = async () => {
 //   const response = await axios.get("/auth/admin", {

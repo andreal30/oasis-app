@@ -1,19 +1,18 @@
 import * as Yup from "yup";
-import { validateUnique } from "../../services/userService";
 
 // Reusable Yup schema generator for dynamic validation
 const UserSchema = ({
   email = false,
-  uniqueEmail = false,
   username = false,
-  uniqueUsername = false,
   emailOrUsername = false, // New field for email or username
   password = false,
-  newPassword = false,
   confirmPassword = false,
   name = false,
   birthDate = false,
+  admin = false,
+  isAdmin = false,
   terms = false,
+  profileImage = false,
 } = {}) => {
   const schemaFields = {};
 
@@ -24,20 +23,6 @@ const UserSchema = ({
         "Uh-oh! That doesn’t look like a valid email. Mind double-checking?"
       )
       .required("Email is required!");
-  } else if (uniqueEmail) {
-    schemaFields.email = Yup.string()
-      .email(
-        "Uh-oh! That doesn’t look like a valid email. Mind double-checking?"
-      )
-      .required("We’ll need your email to stay in touch!")
-      .test(
-        "unique-email",
-        "This email is already taken! Maybe try a new one?",
-        async (value) => {
-          if (!value) return true; // Skip validation if field is empty
-          return await validateUnique("email", value);
-        }
-      );
   }
 
   // Username validation
@@ -54,31 +39,6 @@ const UserSchema = ({
       .matches(
         /^[a-zA-Z0-9_]+$/,
         "Usernames can have letters, numbers, and underscores. Keep it classy!"
-      )
-      .required(
-        "Time to pick a username! This is how the world will know you."
-      );
-  } else if (uniqueUsername) {
-    schemaFields.username = Yup.string()
-      .min(
-        4,
-        "Usernames with at least 4 characters are the cool thing these days!"
-      )
-      .max(
-        50,
-        "That’s a long username! Let’s keep it under 50 characters, yeah?"
-      )
-      .matches(
-        /^[a-zA-Z0-9_]+$/,
-        "Usernames can have letters, numbers, and underscores. Keep it classy!"
-      )
-      .test(
-        "unique-username",
-        "This username is already taken! Time to get creative!",
-        async (value) => {
-          if (!value) return true; // Skip validation if field is empty
-          return await validateUnique("username", value);
-        }
       )
       .required(
         "Time to pick a username! This is how the world will know you."
@@ -103,31 +63,13 @@ const UserSchema = ({
     schemaFields.password = Yup.string()
       .min(
         8,
-        "Remember, your password should be at least 8 characters long to keep it secure!"
+        "Remember, your password is at least 8 characters long to keep it secure!"
       )
       .max(
         100,
         "Wow, that’s a long password! Let’s keep it under 100 characters, okay?"
       )
       .required("Enter your password to access your account.");
-  }
-
-  // New Password validation
-  if (newPassword) {
-    schemaFields.newPassword = Yup.string()
-      .min(
-        8,
-        "Your password needs to be at least 8 characters long. Stronger is better!"
-      )
-      .max(
-        100,
-        "Wow, that’s a long password! Let’s keep it under 100 characters, okay?"
-      )
-      .matches(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]{8,}$/,
-        "For extra safety, include at least one letter, one number, and one special character!"
-      )
-      .required("Please set a strong password for your account.");
   }
 
   // Confirm Password validation
@@ -157,7 +99,34 @@ const UserSchema = ({
   if (birthDate) {
     schemaFields.birthDate = Yup.date()
       .typeError("Hmm, that doesn’t seem like a valid date. Let’s try again!")
-      .required("We need your birth date to get to know you better!");
+      .required("We need your birth date to get to know you better!")
+      .test(
+        "age",
+        "You must be at least 18 years old and younger than 120 to register.",
+        (value) => {
+          if (!value) return false;
+          const today = new Date();
+          const age = today.getFullYear() - value.getFullYear();
+          return age >= 18 && age <= 120;
+        }
+      );
+  }
+
+  // Profile Image validation
+  if (profileImage) {
+    schemaFields.profileImage = Yup.string();
+  }
+
+  // Admin validation
+  if (admin) {
+    schemaFields.admin = Yup.boolean();
+  }
+
+  // Admin validation
+  if (isAdmin) {
+    schemaFields.isAdmin = Yup.boolean()
+      .required("You need to be an admin to access this page!")
+      .oneOf([true], "You need to be an admin to access this page!");
   }
 
   // Terms validation
