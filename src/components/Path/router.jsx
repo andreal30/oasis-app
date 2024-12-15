@@ -10,6 +10,9 @@ import RootLayout from "../../pages/RootLayout";
 import ForgotPasswordPage from "../../pages/ForgotPasswordPage";
 import RegisterPage from "../../pages/RegisterPage";
 import { AuthProvider } from "../../contexts/authContext";
+import AllUsersPage from "../../pages/AllUsersPage";
+import UpdateProfilePage from "../../pages/UpdateProfilePage";
+// import UserList from "../Users/UserList";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +43,9 @@ const router = createBrowserRouter([
           { path: "/profile", element: <ProfilePage /> },
           { path: "/favourites", element: <FavouritesPage /> },
           { path: "/new-flat", element: <NewFlatPage /> },
+          { path: "/update-profile", element: <UpdateProfilePage /> },
+          { path: "/all-users", element: <AllUsersPage /> },
+          // { path: "/user-card/:userId", element: <UserList /> },
         ],
       },
     ],

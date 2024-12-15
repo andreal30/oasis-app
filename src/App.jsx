@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthContext from "./hooks/useAuth";
+import { getToken } from "./utils/tokenUtils";
 
 function App() {
   const navigate = useNavigate();
@@ -9,11 +10,15 @@ function App() {
   // Add global logout listener
   useEffect(() => {
     console.log("User state updated in App:", user);
+    const token = getToken();
 
     const handleLogout = () => {
       logout(); // Ensure logout clears user and redirects appropriately
       navigate("/login");
     };
+    if (!token) {
+      handleLogout();
+    }
 
     // Add the logout event listener
     window.addEventListener("logout", handleLogout);
