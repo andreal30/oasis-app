@@ -28,9 +28,10 @@ const GeneralInput = ({
   return (
     <FloatLabel>
       <IconField iconPosition='left' className='w-full text-400'>
-        <InputIcon className={iconClass}> </InputIcon>
+        <InputIcon className={`pl-1 text-400 pi pi-${iconClass}`}> </InputIcon>
         {type === "number" ? (
           <InputNumber
+            inputId={id}
             id={id}
             name={name}
             value={value}
@@ -42,6 +43,7 @@ const GeneralInput = ({
           />
         ) : (
           <InputText
+            // inputId={id}
             id={id}
             name={name}
             value={value}

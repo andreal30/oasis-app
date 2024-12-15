@@ -16,7 +16,7 @@ const MainButton = ({
     <Button
       label={label}
       icon={icon ? `pi pi-${iconClass}` : null}
-      className={`my-btn ${className}`}
+      className={icon ? `my-btn pr-1-5 ${className}` : `my-btn ${className}`}
       type={type}
       onClick={onClick}
       disabled={disabled}
