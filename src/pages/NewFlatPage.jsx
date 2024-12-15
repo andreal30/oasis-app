@@ -1,5 +1,5 @@
 import FlatForm from '../components/Flats/FlatForm';
-import NewFlatImg from './../images/new-flat-img.png';
+//import NewFlatImg from './../images/new-flat-img.png';
 import { Image } from 'primereact/image';
 
 const NewFlatPage = () => {
@@ -10,7 +10,7 @@ const NewFlatPage = () => {
                     <Image
                         id="newFlatImg"
                         className="w-full h-full"
-                        src={NewFlatImg}
+                        // src={NewFlatImg}
                         alt="New Flat Background"
                     />
                 </div>

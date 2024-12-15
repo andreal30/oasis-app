@@ -1,12 +1,11 @@
+//import { flatsApi } from '../services/flatsApi';
 import PropTypes from 'prop-types';
-import { Timestamp } from 'firebase/firestore';
 import { Avatar } from 'primereact/avatar';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import MessageForm from '../components/Messages/MessageForm';
 import MessageList from '../components/Messages/MessageList';
 import { useAuth } from '../hooks/useAuth';
-import { getUserByEmail } from '../services/firebase';
 import FlatImg from './../images/apt-21.jpg';
 import BathroomIcon from './../images/bathroomIcon.svg';
 import RoomIcon from './../images/roomIcon.svg';
@@ -23,19 +22,13 @@ const FlatDetailsPage = ({ flat }) => {
         }
     }, [user, loading, navigate]);
 
-    if (loading) {
-        return (
-            <div>
-                <i className="pi pi-spin pi-spinner"></i> Loading...
-            </div>
-        );
-    }
-
-    (() => {
+    useEffect(() => {
         const fetchUser = async () => {
             try {
-                const fetchedUser = await getUserByEmail(flat.flatUser);
-                setUserF(fetchedUser.length > 0 ? fetchedUser[0] : null);
+                // Replace with your API call
+                const response = await fetch(`/api/users/${flat.flatUser}`);
+                const userData = await response.json();
+                setUserF(userData);
             } catch (error) {
                 console.error('Failed to fetch user:', error);
             } finally {
@@ -46,7 +39,7 @@ const FlatDetailsPage = ({ flat }) => {
     }, [flat.flatUser]);
 
     const formatDate = (date) => {
-        const dateObj = date instanceof Timestamp ? date.toDate() : date;
+        const dateObj = new Date(date);
         const formatter = new Intl.DateTimeFormat('en-GB', {
             day: 'numeric',
             month: 'long',
@@ -59,7 +52,7 @@ const FlatDetailsPage = ({ flat }) => {
         ? formatDate(flat.dateAvailable)
         : 'N/A';
 
-    if (loadingF) {
+    if (loading || loadingF) {
         return (
             <div>
                 <i className="pi pi-spin pi-spinner"></i> Loading...
@@ -176,10 +169,7 @@ FlatDetailsPage.propTypes = {
         bathrooms: PropTypes.number.isRequired,
         hasAc: PropTypes.bool.isRequired,
         yearBuilt: PropTypes.number.isRequired,
-        dateAvailable: PropTypes.oneOfType([
-            PropTypes.instanceOf(Timestamp),
-            PropTypes.instanceOf(Date),
-        ]),
+        dateAvailable: PropTypes.string.isRequired,
         flatId: PropTypes.string.isRequired,
     }).isRequired,
 };

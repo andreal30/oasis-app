@@ -1,7 +1,9 @@
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { Input, Checkbox, Button } from 'shared-components';
+import { InputText } from 'primereact/inputtext';
+import { Checkbox } from 'primereact/checkbox';
+import { Button } from 'primereact/button';
 import PropTypes from 'prop-types';
 
 const FlatForm = () => {
@@ -42,19 +44,19 @@ const FlatForm = () => {
             {({ errors, touched }) => (
                 <Form>
                     <div>
-                        <Field name="city" as={Input} placeholder="City" />
+                        <Field name="city" as={InputText} placeholder="City" />
                         {errors.city && touched.city ? <div>{errors.city}</div> : null}
                     </div>
                     <div>
-                        <Field name="streetName" as={Input} placeholder="Street Name" />
+                        <Field name="streetName" as={InputText} placeholder="Street Name" />
                         {errors.streetName && touched.streetName ? <div>{errors.streetName}</div> : null}
                     </div>
                     <div>
-                        <Field name="streetNumber" as={Input} type="number" placeholder="Street Number" />
+                        <Field name="streetNumber" as={InputText} type="number" placeholder="Street Number" />
                         {errors.streetNumber && touched.streetNumber ? <div>{errors.streetNumber}</div> : null}
                     </div>
                     <div>
-                        <Field name="areaSize" as={Input} type="number" placeholder="Area Size" />
+                        <Field name="areaSize" as={InputText} type="number" placeholder="Area Size" />
                         {errors.areaSize && touched.areaSize ? <div>{errors.areaSize}</div> : null}
                     </div>
                     <div>
@@ -63,18 +65,18 @@ const FlatForm = () => {
                         {errors.hasAC && touched.hasAC ? <div>{errors.hasAC}</div> : null}
                     </div>
                     <div>
-                        <Field name="yearBuilt" as={Input} type="number" placeholder="Year Built" />
+                        <Field name="yearBuilt" as={InputText} type="number" placeholder="Year Built" />
                         {errors.yearBuilt && touched.yearBuilt ? <div>{errors.yearBuilt}</div> : null}
                     </div>
                     <div>
-                        <Field name="rentPrice" as={Input} type="number" placeholder="Rent Price" />
+                        <Field name="rentPrice" as={InputText} type="number" placeholder="Rent Price" />
                         {errors.rentPrice && touched.rentPrice ? <div>{errors.rentPrice}</div> : null}
                     </div>
                     <div>
-                        <Field name="dateAvailable" as={Input} type="date" placeholder="Date Available" />
+                        <Field name="dateAvailable" as={InputText} type="date" placeholder="Date Available" />
                         {errors.dateAvailable && touched.dateAvailable ? <div>{errors.dateAvailable}</div> : null}
                     </div>
-                    <Button type="submit">Submit</Button>
+                    <Button type="submit" label="Submit" />
                 </Form>
             )}
         </Formik>
