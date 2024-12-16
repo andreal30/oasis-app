@@ -49,14 +49,10 @@ export const denyAdminApi = async (userId) => {
   return await axiosInstance.delete(`/users/admin/${userId}`);
 };
 
-export const getFlatsCountForUsersApi = async (userIds) => {
-  try {
-    const response = await axiosInstance.post("/users/flats/count", {
-      userIds,
-    });
-    return response.data; // Axios automatically parses the JSON response into a JavaScript object
-  } catch (error) {
-    console.error("Error fetching flats count from API:", error);
-    throw error; // Throw the error to be caught in the service function
-  }
+export const addFlatFavouriteApi = async (flatId) => {
+  return await axiosInstance.post(`/users/favourite-flat/${flatId}`);
+};
+
+export const removeFlatFavouriteApi = async (flatId) => {
+  return await axiosInstance.delete(`/users/favourite-flat/${flatId}`);
 };

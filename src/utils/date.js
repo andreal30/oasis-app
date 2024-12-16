@@ -1,7 +1,7 @@
 import { format, parseISO, isValid } from "date-fns";
 
 // Format a date to 'MM/dd/yyyy' or other formats
-export const formatDate = (date, dateFormat = "MM/dd/yyyy") => {
+export const formatDate = (date, dateFormat = "dd/MM/yyyy") => {
   const parsedDate = typeof date === "string" ? parseISO(date) : date;
   return isValid(parsedDate) ? format(parsedDate, dateFormat) : "Invalid Date";
 };

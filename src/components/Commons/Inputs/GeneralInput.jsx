@@ -4,6 +4,7 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
+import React, { Suspense } from "react";
 
 const GeneralInput = ({
   id,
@@ -11,6 +12,7 @@ const GeneralInput = ({
   value,
   onChange,
   iconClass,
+  iconPh,
   label,
   type = "text",
   className = "",
@@ -25,10 +27,24 @@ const GeneralInput = ({
     onChange(e); // Handle text inputs
   };
 
+  const DynamicIcon = iconPh
+    ? React.lazy(() =>
+        import(`@phosphor-icons/react`).then((module) => ({
+          default: module[iconPh],
+        }))
+      )
+    : null;
+
   return (
     <FloatLabel>
       <IconField iconPosition='left' className='w-full text-400'>
-        <InputIcon className={`pl-1 text-400 pi pi-${iconClass}`}> </InputIcon>
+        {iconPh ? (
+          <Suspense fallback={<span>Loading icon...</span>}>
+            <DynamicIcon />
+          </Suspense>
+        ) : (
+          <InputIcon className={`pl-1 text-400 pi pi-${iconClass}`} />
+        )}
         {type === "number" ? (
           <InputNumber
             inputId={id}
@@ -71,7 +87,8 @@ GeneralInput.propTypes = {
     PropTypes.oneOf([null]),
   ]),
   onChange: PropTypes.func.isRequired,
-  iconClass: PropTypes.string.isRequired,
+  iconClass: PropTypes.string,
+  iconPh: PropTypes.string,
   label: PropTypes.string.isRequired,
   type: PropTypes.oneOf(["text", "number", "email"]),
   className: PropTypes.string,

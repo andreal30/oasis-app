@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuthContext from "./hooks/useAuth";
+import useAuth from "./hooks/useAuth";
 import { getToken } from "./utils/tokenUtils";
 
 function App() {
   const navigate = useNavigate();
-  const { logout, user } = useAuthContext();
+  const { logout, user } = useAuth();
 
   // Add global logout listener
   useEffect(() => {

@@ -1,13 +1,13 @@
 import LogoWhite from "./../../images/SVG/logo-white.svg";
 import { Image } from "primereact/image";
 import { useState } from "react";
-import useAuthContext from "../../hooks/useAuth";
+import useAuth from "../../hooks/useAuth";
 import Navbar from "./Navbar";
 import IconButton from "./Buttons/IconButton";
 
 const Header = () => {
   const [visible, setVisible] = useState(false);
-  const { user } = useAuthContext();
+  const { user } = useAuth();
 
   return (
     <>
