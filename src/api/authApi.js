@@ -38,3 +38,16 @@ export const resetPasswordApi = async (token, password) => {
     password,
   }); // Raw API interaction
 };
+
+export const getLoggedUserByIdApi = async (userId) => {
+  try {
+    const response = await axiosInstance.get(`/auth/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching user by ID:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};

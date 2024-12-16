@@ -9,44 +9,23 @@
 // };
 
 import {
+  addFlatFavouriteApi,
   allowAdminApi,
-  deleteProfileImageApi,
   deleteUserApi,
   denyAdminApi,
   getAllUsersApi,
   getUserByIdApi,
+  removeFlatFavouriteApi,
   updateUserProfileApi,
-  uploadProfileImageApi,
   validateUniqueApi,
 } from "../api/userApi";
+import { getLocal } from "../utils/localStorage";
 
 export const validateUnique = async (field, value) => {
   try {
     return await validateUniqueApi(field, value);
   } catch (error) {
     console.error("Error validating uniqueness:", error);
-    throw error;
-  }
-};
-
-export const uploadProfileImage = async (profileFile) => {
-  try {
-    const formData = new FormData();
-    formData.append("profileImage", profileFile);
-    const { data } = await uploadProfileImageApi(formData);
-    return data.downloadURL; // Extract the image URL from API response
-  } catch (error) {
-    console.error("Error uploading profile image:", error);
-    throw error;
-  }
-};
-
-export const deleteProfileImage = async (imageUrl) => {
-  try {
-    const response = await deleteProfileImageApi(imageUrl);
-    return response.data.message; // Return the success message
-  } catch (error) {
-    console.error("Error deleting profile image:", error);
     throw error;
   }
 };
@@ -125,6 +104,18 @@ export const filterAndSortUsers = async (filters, sortOptions) => {
   const response = await getAllUsersApi(queryParams);
   if (!response.ok) throw new Error("Failed to filter and sort users");
   return await response.json();
+};
+
+export const toggleFavourites = async (flatId) => {
+  const user = getLocal("loggedInUser");
+
+  const isFavourite = user.favouriteFlats.includes(flatId);
+  if (isFavourite) {
+    await removeFlatFavouriteApi(flatId);
+  } else {
+    await addFlatFavouriteApi(flatId);
+  }
+  return isFavourite;
 };
 
 // export const filterUsers = async (filters) => {

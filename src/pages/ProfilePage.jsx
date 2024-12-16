@@ -1,11 +1,11 @@
 import { Avatar } from "primereact/avatar";
-import useAuthContext from "../hooks/useAuth";
+import useAuth from "../hooks/useAuth";
 import { formatDateInWords } from "../utils/date";
 import MainButton from "../components/Commons/Buttons/MainButton";
 import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const handleProfileUpdate = () => {
     navigate("/update-profile");

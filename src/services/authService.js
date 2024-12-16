@@ -1,6 +1,7 @@
 import { clearToken, setToken } from "../utils/tokenUtils";
 import {
   forgotPasswordApi,
+  getLoggedUserByIdApi,
   loginApi,
   logoutApi,
   registerApi,
@@ -37,7 +38,6 @@ export const LogoutUser = async () => {
 export const registerUser = (userData) => {
   try {
     const response = registerApi(userData); // response is already `response.data`
-    console.log("1. REGISTER USER Registration response:", response);
     return response;
   } catch (error) {
     console.error(
@@ -54,4 +54,14 @@ export const forgotPasswordUser = (email) => {
 
 export const resetPasswordUser = (token, password) => {
   return resetPasswordApi(token, password); // Directly call API
+};
+
+export const getLoggedUserById = async (userId) => {
+  try {
+    const user = await getLoggedUserByIdApi(userId);
+    return user;
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    throw error;
+  }
 };

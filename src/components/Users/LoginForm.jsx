@@ -8,7 +8,7 @@ import MessageErrors from "../Commons/Inputs/MessageErrors";
 import MainButton from "../Commons/Buttons/MainButton";
 import { Skeleton } from "primereact/skeleton";
 import PasswordInput from "../Commons/Inputs/PaswordInput";
-import useAuthContext from "../../hooks/useAuth";
+import useAuth from "../../hooks/useAuth";
 import { getLocal } from "../../utils/localStorage";
 
 const validationSchema = UserSchema({
@@ -22,7 +22,7 @@ const LoginForm = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const { login } = useAuthContext();
+  const { login } = useAuth();
 
   const formik = useFormik({
     initialValues: {

@@ -4,7 +4,7 @@ import { FileUpload } from "primereact/fileupload";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputSwitch } from "primereact/inputswitch";
 import { useRef, useState } from "react";
-import useAuthContext from "../../hooks/useAuth";
+import useAuth from "../../hooks/useAuth";
 import GeneralInput from "../Commons/Inputs/GeneralInput";
 import MainButton from "../Commons/Buttons/MainButton";
 import MessageErrors from "../Commons/Inputs/MessageErrors";
@@ -17,7 +17,7 @@ import { getToken } from "../../utils/tokenUtils";
 import { updateUserProfile, validateUnique } from "../../services/userService";
 import { registerUser } from "../../services/authService";
 import PropTypes from "prop-types";
-import { resizeImage } from "../../utils/images";
+import { uploadImage } from "../../utils/images";
 import * as Yup from "yup";
 import { Toast } from "primereact/toast";
 import {
@@ -25,6 +25,8 @@ import {
   uploadProfileImageFirebase,
 } from "../../services/firebase";
 import LoadingSkeleton from "../Commons/Misc/LoadingSkeleton";
+import { isPasswordStrong } from "../../utils/validator";
+import { formatDate } from "../../utils/date";
 
 //Min and Max Dates
 let today = new Date();
@@ -42,6 +44,24 @@ let minYear = year - 120;
 let minMonth = month;
 let minDay = today.getDate();
 let minDate = new Date(minYear, minMonth, minDay);
+
+const commonPasswords = [
+  "1234",
+  "password",
+  "admin",
+  "123456",
+  "12345678",
+  "qwerty",
+  "abc123",
+  "iloveyou",
+  "letmein",
+  "welcome",
+  "monkey",
+  "football",
+  "123123",
+  "admin123",
+  "passw0rd",
+]; // Add more if needed
 
 const registerSchema = UserSchema({
     confirmPassword: true,
@@ -100,6 +120,16 @@ const registerSchema = UserSchema({
         /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]{8,}$/,
         "For extra safety, include at least one letter, one number, and one special character!"
       )
+      .test(
+        "isPasswordStrong",
+        "Your password must include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+        (value) => isPasswordStrong(value)
+      )
+      .test(
+        "notCommonPassword",
+        "Your password is too common and easy to guess. Choose something more secure.",
+        (value) => !commonPasswords.includes(value.toLowerCase())
+      )
       .required("Please set a strong password for your account."),
     profileImage: Yup.lazy((value) =>
       value
@@ -129,7 +159,7 @@ const UserForm = ({ user, onClose, setUpdated }) => {
   const toast = useRef(null);
   const navigate = useNavigate();
 
-  const { login } = useAuthContext();
+  const { login } = useAuth();
   const location = useLocation();
 
   const isLoggedIn = getToken();
@@ -154,7 +184,7 @@ const UserForm = ({ user, onClose, setUpdated }) => {
     // confirmPassword: "",
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
-    birthDate: user?.birthDate || null,
+    birthDate: formatDate(user?.birthDate) || null,
     admin: user?.isAdmin || false,
     profileImage: user?.profileImage || null,
   };
@@ -174,17 +204,12 @@ const UserForm = ({ user, onClose, setUpdated }) => {
     initialValues,
     validationSchema,
     onSubmit: async (values) => {
-      console.log("0. USER Form submitted with values:", values);
       setError(null);
       setSuccess(null);
       setLoading(true);
 
-      console.log("1. USER FORM is logged in?", isLoggedIn);
-      console.log("2. USER FORM is registering?", registerPath);
       try {
         let imageUrl = user?.profileImage || "";
-        console.log("3. USER FORM imageUrl:", imageUrl);
-        console.log("4. USER FORM profileFile:", profileFile);
         if (profileFile) {
           if (user?.profileImage) {
             await deleteProfileImageFirebase(user.profileImage); // Delete existing profile image
@@ -203,16 +228,9 @@ const UserForm = ({ user, onClose, setUpdated }) => {
             birthDate: values.birthDate || new Date() || null,
             isAdmin: false,
           };
-          console.log("5. USER FORM userData:", userData);
           const newUser = await registerUser(userData);
-          console.log("6. USER FORM New user registered:", newUser);
 
           const response = await login(newUser.email, values.password);
-          console.log(
-            "7. USER FORM New user Login response:",
-            response,
-            response.status
-          );
 
           if (response !== undefined && response !== null) {
             setSuccess(
@@ -236,19 +254,12 @@ const UserForm = ({ user, onClose, setUpdated }) => {
             // profileImage: imageUrl,
             // isAdmin: values.admin,
           };
-          console.log(
-            "5. USER FORM ID and updatedData :",
-            user._id,
-            updatedData
-          );
 
           const response = await updateUserProfile(user._id, updatedData);
           //   onClose();
-          console.log("6. USER FORM Update response:", response);
 
           if (response.status === 200) {
             setSuccess(`Profile has been updated successfully!`);
-            console.log("7. USER FORM Success message:", success);
             setTimeout(() => {
               if (currentPath.includes("/profile")) {
                 // Navigate to '/home'
@@ -277,28 +288,11 @@ const UserForm = ({ user, onClose, setUpdated }) => {
   const handleUploadImage = async ({ files }) => {
     try {
       const file = files[0];
-      if (!file) throw new Error("No file uploaded.");
-
-      // Validate file type and size
-      if (file.size > 2 * 1024 * 1024) {
-        throw new Error("File size exceeds 2MB.");
-      }
-      if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
-        throw new Error(
-          "Invalid file type. Only JPEG, PNG, and JPG are allowed."
-        );
+      if (!file) {
+        throw new Error("No file selected.");
       }
 
-      // Resize the image
-      const resizedImageBlob = await resizeImage(file);
-
-      // Convert the Blob to a File for FormData compatibility
-      const resizedFile = new File([resizedImageBlob], file.name, {
-        type: file.type,
-      });
-
-      // Upload using the service
-      const downloadURL = await uploadProfileImageFirebase(resizedFile);
+      const { downloadURL, resizedBuffer } = await uploadImage(file, "user");
 
       toast.current.show({
         severity: "success",
@@ -308,20 +302,22 @@ const UserForm = ({ user, onClose, setUpdated }) => {
 
       console.log("Image URL:", downloadURL);
 
+      // Notify parent component of success
       formik.setFieldValue("profileImage", downloadURL);
-
-      setProfileFile(resizedFile);
+      setProfileFile(resizedBuffer);
     } catch (error) {
       toast.current.show({
         severity: "error",
         summary: "Error",
         detail: error.message || "Failed to upload image.",
       });
-      console.error("Upload error:", error);
+
+      console.error("Image upload error:", error);
+
+      // Notify parent component of failure
+      console.error("User image upload error:", error);
     }
   };
-
-  console.log("Formik Values:", formik.errors);
 
   const isAdministrator = user?.isAdmin || false;
 
@@ -331,37 +327,20 @@ const UserForm = ({ user, onClose, setUpdated }) => {
       {success && <Messages severity='success' text={success} />}
 
       <Toast ref={toast} />
+
+      <div className='flex justify-content-center mb-4'>
+        <Image
+          src={user?.profileImage}
+          alt='User Profile Image'
+          className='profile-img'
+        />
+      </div>
+
       <form
         id='UserForm'
         onSubmit={formik.handleSubmit}
         className='w-full flex flex-column gap-3'
       >
-        <div className='flex justify-content-center mb-4'>
-          <Image
-            src={user?.profileImage}
-            alt='User Profile Image'
-            className='profile-img'
-          />
-        </div>
-
-        <GeneralInput
-          id='firstName'
-          name='firstName'
-          value={formik.values.firstName}
-          onChange={formik.handleChange}
-          iconClass='user'
-          label='First Name'
-          type='text'
-        />
-        {formik.touched.firstName && formik.errors.firstName ? (
-          <MessageErrors
-            error={formik.errors.firstName}
-            touched={formik.touched.firstName}
-          />
-        ) : (
-          <div className='mt-0'></div>
-        )}
-
         <GeneralInput
           id='lastName'
           name='lastName'
@@ -427,6 +406,7 @@ const UserForm = ({ user, onClose, setUpdated }) => {
             </span>
             <Calendar
               inputId='birthDate'
+              name='birthDate'
               value={formik.values.birthDate}
               // onChange={(e) => handleBirthdayChange(e.value)}
               onChange={(e) => formik.setFieldValue("birthDate", e.value)}
@@ -492,7 +472,6 @@ const UserForm = ({ user, onClose, setUpdated }) => {
         {isAdministrator && (
           <>
             <div className='mt-3  flex align-items-center gap-2'>
-              <label htmlFor='isAdmin'>Is Admin</label>
               <InputSwitch
                 checked={formik.values.admin} // Use the correct field name
                 onChange={(e) => formik.setFieldValue("admin", e.value)} // Match the field name
@@ -500,6 +479,7 @@ const UserForm = ({ user, onClose, setUpdated }) => {
                 inputId='isAdmin'
                 id='isAdmin'
               />
+              <label htmlFor='isAdmin'>Is Admin</label>
             </div>
           </>
         )}

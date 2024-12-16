@@ -3,10 +3,10 @@ import { Ripple } from "primereact/ripple";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LogoutUser } from "../../services/authService";
 import PropTypes from "prop-types";
-import useAuthContext from "../../hooks/useAuth";
+import useAuth from "../../hooks/useAuth";
 
 const MainNavigation = ({ setVisible }) => {
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {

@@ -1,52 +1,86 @@
-import pica from "pica";
-// import sharp from "sharp";
+import Pica from "pica";
+import Cropper from "cropperjs";
+import "cropperjs/dist/cropper.css";
+import {
+  uploadFlatImageFirebase,
+  uploadProfileImageFirebase,
+} from "../services/firebase";
 
-export const resizeImage = async (file) => {
-  const picaInstance = pica();
+const pica = Pica();
+
+// Resize and crop an image using Pica and CropperJS
+export const resizeAndCropImage = async (file, type) => {
+  const image = document.createElement("img");
+  image.src = URL.createObjectURL(file);
+
   const canvas = document.createElement("canvas");
-  const img = document.createElement("img");
-  img.src = URL.createObjectURL(file);
+  const cropCanvas = document.createElement("canvas");
+  document.body.appendChild(canvas); // Necessary for CropperJS to work
 
   return new Promise((resolve, reject) => {
-    img.onload = async () => {
+    image.onload = async () => {
       try {
-        // Calculate aspect ratio
-        const aspectRatio = img.width / img.height;
+        // Determine dimensions and aspect ratio
+        const aspectRatio = type === "flat" ? 16 / 9 : 1;
+        const targetWidth = type === "flat" ? 550 : 300;
+        const targetHeight =
+          type === "flat" ? Math.round(550 / aspectRatio) : 300;
 
-        // Define desired dimensions
-        canvas.width = 320;
-        canvas.height = 320 / aspectRatio;
+        // Crop the image using CropperJS
+        const cropper = new Cropper(image, {
+          aspectRatio,
+          viewMode: 1,
+        });
 
-        // Resize the image
-        await picaInstance.resize(img, canvas);
+        const croppedCanvas = cropper.getCroppedCanvas();
 
-        // Convert canvas to blob
-        canvas.toBlob(
+        // Resize the cropped image using Pica
+        cropCanvas.width = targetWidth;
+        cropCanvas.height = targetHeight;
+
+        await pica.resize(croppedCanvas, cropCanvas);
+
+        // Convert the resized image to Blob
+        cropCanvas.toBlob(
           (blob) => {
             if (blob) {
-              resolve(blob); // Return the resized image as a Blob
+              resolve(blob); // Return the processed image as a Blob
             } else {
-              reject(new Error("Canvas to Blob conversion failed."));
+              reject(new Error("Failed to convert canvas to Blob."));
             }
           },
           file.type, // Preserve file type
-          0.9 // Optional quality factor
+          0.9 // Quality
         );
-      } catch (resizeError) {
-        reject(new Error(`Image resizing failed: ${resizeError.message}`));
+      } catch (error) {
+        reject(new Error(`Image processing failed: ${error.message}`));
+      } finally {
+        document.body.removeChild(canvas); // Clean up temporary canvas
       }
     };
 
-    img.onerror = () => reject(new Error("Failed to load image for resizing."));
+    image.onerror = () => reject(new Error("Failed to load the image."));
   });
 };
 
-// export const resizeAndCropImage = async (fileBuffer) => {
-//   return await sharp(fileBuffer)
-//     .resize({
-//       width: 2048,
-//       height: 2048,
-//       fit: sharp.fit.cover,
-//     })
-//     .toBuffer();
-// };
+// Upload image to Firebase and return the download URL
+export const uploadImage = async (file, type) => {
+  try {
+    const processedBlob = await resizeAndCropImage(file, type);
+
+    // Convert Blob to File for Firebase
+    const processedFile = new File([processedBlob], file.name, {
+      type: file.type,
+    });
+
+    // Choose upload function based on type
+    const uploadFunction =
+      type === "flat" ? uploadFlatImageFirebase : uploadProfileImageFirebase;
+
+    const downloadURL = await uploadFunction(processedFile);
+    return { downloadURL, processedFile };
+  } catch (error) {
+    console.error("Upload error:", error);
+    throw error;
+  }
+};

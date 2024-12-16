@@ -4,16 +4,17 @@ import { useRef, useState } from "react";
 import IconButton from "../Buttons/IconButton";
 import MainButton from "../Buttons/MainButton";
 
-const SortUser = ({ onSortChange, onClearSort }) => {
+const SortFlat = ({ onSortChange, onClearSort }) => {
   const op = useRef(null);
   const [selectedField, setSelectedField] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
 
   const sortFields = [
-    { label: "First Name", value: "firstName" },
-    { label: "Last Name", value: "lastName" },
-    { label: "Age", value: "age" },
-    { label: "Number of Flats", value: "flatCount" },
+    { label: "City", value: "city" },
+    { label: "Price", value: "price" },
+    { label: "Area Size", value: "area" },
+    { label: "Rooms", value: "rooms" },
+    { label: "Bathrooms", value: "bathrooms" },
   ];
 
   const handleSort = (field, order) => {
@@ -31,11 +32,11 @@ const SortUser = ({ onSortChange, onClearSort }) => {
   return (
     <div className='card flex justify-content-center'>
       <IconButton
-        label='Sort Users'
+        label='Sort Flats'
         iconClass='pi pi-sort-alt'
         onClick={(e) => op.current?.toggle(e)}
       />
-      <OverlayPanel ref={op} style={{ width: "300px" }}>
+      <OverlayPanel ref={op} style={{ width: "20em" }}>
         <p className='font-semibold'>Sort By</p>
         <div className='flex flex-column gap-2'>
           {sortFields.map((field) => (
@@ -67,7 +68,7 @@ const SortUser = ({ onSortChange, onClearSort }) => {
         </div>
         <MainButton
           label='Clear Sort'
-          className='w-full mt-2'
+          className='mt-2'
           onClick={handleClearSort}
           type='button'
         />
@@ -76,9 +77,9 @@ const SortUser = ({ onSortChange, onClearSort }) => {
   );
 };
 
-SortUser.propTypes = {
+SortFlat.propTypes = {
   onSortChange: PropTypes.func.isRequired,
   onClearSort: PropTypes.func.isRequired,
 };
 
-export default SortUser;
+export default SortFlat;

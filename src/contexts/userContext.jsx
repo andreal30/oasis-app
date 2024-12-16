@@ -1,7 +1,7 @@
-import useAuthContext from "../hooks/useAuth";
+import useAuth from "../hooks/useAuth";
 
 const UserContext = () => {
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   if (user?.isAdmin) {
     // Show admin UI
   }

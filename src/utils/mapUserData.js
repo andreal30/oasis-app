@@ -10,6 +10,7 @@ const mapUserData = (userData) => {
     birthDate: userData.birthDate || new Date(),
     _id: userData._id || "",
     profileImage: userData.profileImage || "",
+    favouriteFlats: userData.favouriteFlats || [],
     isAdmin: userData.isAdmin ?? false,
   };
 };
