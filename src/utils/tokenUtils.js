@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode";
+
 // Set token in local storage
 export const setToken = (token) => {
   localStorage.setItem("token", token);
@@ -17,4 +19,16 @@ export const clearToken = () => {
 // Check if token exists
 export const hasToken = () => {
   return !!getToken();
+};
+
+// Check if token is expired
+export const isTokenExpired = (token) => {
+  try {
+    const decoded = jwtDecode(token);
+    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    return decoded.exp < currentTime; // Check if the token is expired
+  } catch (error) {
+    console.error("Invalid token:", error);
+    return true; // Treat invalid tokens as expired
+  }
 };

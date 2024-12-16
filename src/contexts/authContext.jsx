@@ -2,8 +2,8 @@ import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { getToken, clearToken } from "../utils/tokenUtils";
 import { loginUser, LogoutUser } from "../services/authService";
+import { getLoggedUserById } from "../services/authService";
 import { parseJwt } from "../utils/parseJwt";
-import { getUserById } from "../services/userService";
 import { clearLocal, getLocal, setLocal } from "../utils/localStorage";
 import { useNavigate } from "react-router-dom";
 import mapUserData from "../utils/mapUserData";
@@ -30,7 +30,7 @@ const AuthProvider = ({ children }) => {
       const storedUser = getLocal("loggedInUser");
       if (storedUser) {
         setUser(storedUser);
-        console.log("User hydrated from localStorage:", storedUser);
+        console.log("User from localStorage");
         return;
       }
 
@@ -38,14 +38,19 @@ const AuthProvider = ({ children }) => {
       const decodedUser = parseJwt(token);
       setLocal("decodedUser", decodedUser);
 
-      const userDb = await getUserById(decodedUser.user_id);
+      const userDb = await getLoggedUserById(decodedUser.user_id);
+      console.log(
+        "1. AUTH CONTEXT: User fetched from DB, decodedUser:",
+        userDb
+      );
       if (userDb.status === 200) {
         const loggedInUser = mapUserData(userDb.data);
+        console.log("2. AUTH CONTEXT: loggedInUser", loggedInUser);
         setLocal("loggedInUser", loggedInUser);
         setUser(loggedInUser);
-        console.log("User fetched and hydrated from DB:", loggedInUser);
+        console.log("User fetched from DB:");
       } else {
-        console.error("Failed to fetch user from DB during hydration.");
+        console.error("Failed to fetch user from DB.");
         clearToken();
         clearLocal("loggedInUser");
       }
@@ -74,7 +79,7 @@ const AuthProvider = ({ children }) => {
         const decodedUser = parseJwt(token);
         setLocal("decodedUser", decodedUser);
 
-        const userDb = await getUserById(decodedUser.user_id);
+        const userDb = await getLoggedUserById(decodedUser.user_id);
         if (userDb) {
           const loggedInUser = mapUserData(userDb);
           setLocal("loggedInUser", loggedInUser);

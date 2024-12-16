@@ -1,26 +1,28 @@
-import axios from "../utils/axios";
+import axiosInstance from "../utils/axios";
 
 // Fetch a list of flats (supports pagination and filters)
-export const fetchFlats = async (filters = {}, page = 1) => {
-  return axios.get("/flats", { params: { ...filters, page } });
+export const getFlatsApi = async () => {
+  console.log("1. GET FLATS API: fetching flats");
+  return axiosInstance.get("/flats");
 };
 
 // Fetch a single flat by ID
-export const fetchFlatById = async (flatId) => {
-  return axios.get(`/flats/${flatId}`);
+export const getFlatByIdApi = async (flatId) => {
+  console.log("2. GET FLAT BY ID API: fetching flat");
+  return axiosInstance.get(`/flats/${flatId}`);
 };
 
 // Create a new flat
-export const createFlat = async (flatData) => {
-  return axios.post("/flats", flatData);
+export const createFlatApi = async (flatData) => {
+  return axiosInstance.post("/flats", flatData);
 };
 
 // Update a flat by ID
-export const updateFlat = async (flatId, updatedData) => {
-  return axios.put(`/flats/${flatId}`, updatedData);
+export const updateFlatApi = async (flatId, updatedData) => {
+  return axiosInstance.put(`/flats/${flatId}`, updatedData);
 };
 
 // Delete a flat by ID
-export const deleteFlat = async (flatId) => {
-  return axios.delete(`/flats/${flatId}`);
+export const deleteFlatApi = async (flatId) => {
+  return axiosInstance.delete(`/flats/${flatId}`);
 };

@@ -18,7 +18,6 @@ const UserCard = ({
 }) => {
   const [dialogVisible, setDialogVisible] = useState(false);
 
-  console.log("1. USER CARD user", user);
   const handleDialogClose = () => {
     setDialogVisible(false);
   };
@@ -95,7 +94,7 @@ const UserCard = ({
         <Card
           footer={footer}
           header={header}
-          className='border-1 border-round-xl border-main-300 bg-main-50'
+          className='border-1 border-round-xl border-main-300 bg-50'
         >
           <ul className='list-none p-0 m-0 flex flex-column gap-2'>
             <li className='mt-0'>

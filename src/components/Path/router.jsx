@@ -12,6 +12,7 @@ import RegisterPage from "../../pages/RegisterPage";
 import { AuthProvider } from "../../contexts/authContext";
 import AllUsersPage from "../../pages/AllUsersPage";
 import UpdateProfilePage from "../../pages/UpdateProfilePage";
+import MyFlatsPage from "../../pages/MyFlatsPage";
 // import UserList from "../Users/UserList";
 
 const router = createBrowserRouter([
@@ -45,6 +46,7 @@ const router = createBrowserRouter([
           { path: "/new-flat", element: <NewFlatPage /> },
           { path: "/update-profile", element: <UpdateProfilePage /> },
           { path: "/all-users", element: <AllUsersPage /> },
+          { path: "/my-flats", element: <MyFlatsPage /> },
           // { path: "/user-card/:userId", element: <UserList /> },
         ],
       },
