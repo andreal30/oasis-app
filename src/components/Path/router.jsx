@@ -13,7 +13,9 @@ import { AuthProvider } from "../../contexts/authContext";
 import AllUsersPage from "../../pages/AllUsersPage";
 import UpdateProfilePage from "../../pages/UpdateProfilePage";
 import MyFlatsPage from "../../pages/MyFlatsPage";
-// import UserList from "../Users/UserList";
+import EditFlatPage from "../../pages/EditFlatPage";
+import FlatDetailsPage from "../../pages/FlatDetailsPage";
+import UpdatePasswordPage from "../../pages/UpdatePasswordPage";
 
 const router = createBrowserRouter([
   {
@@ -40,14 +42,23 @@ const router = createBrowserRouter([
         // Private routes with shared layout
         element: <RootLayout />,
         children: [
+          // Dashboard routes
           { path: "/home", element: <HomePage /> },
-          { path: "/profile", element: <ProfilePage /> },
+          { path: "/my-flats", element: <MyFlatsPage /> },
           { path: "/favourites", element: <FavouritesPage /> },
+
+          // Flat management routes
           { path: "/new-flat", element: <NewFlatPage /> },
+          { path: "/flats/edit/:id", element: <EditFlatPage /> },
+          { path: "/flats/:id", element: <FlatDetailsPage /> },
+
+          // User management routes
+          { path: "/profile", element: <ProfilePage /> },
           { path: "/update-profile", element: <UpdateProfilePage /> },
           { path: "/all-users", element: <AllUsersPage /> },
-          { path: "/my-flats", element: <MyFlatsPage /> },
-          // { path: "/user-card/:userId", element: <UserList /> },
+
+          // Additional routes as needed
+          { path: "/update-password", element: <UpdatePasswordPage /> },
         ],
       },
     ],

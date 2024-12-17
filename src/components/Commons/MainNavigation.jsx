@@ -24,71 +24,70 @@ const MainNavigation = ({ setVisible }) => {
       <div className='overflow-y-auto'>
         <ul className='list-none p-0 m-0 overflow-hidden'>
           <li>
-            <div className='p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full'>
-              <i className='pi pi-home mr-2'></i>
-              <NavLink
-                to='/home'
-                className='font-medium no-underline text-700'
-                onClick={handleVisible}
-              >
-                Home
-              </NavLink>
-              <Ripple />
-            </div>
+            <NavLink
+              to='/home'
+              className='no-underline'
+              onClick={handleVisible}
+            >
+              <div className='p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full'>
+                <i className='pi pi-home mr-2'></i>
+                <span className='font-medium text-700'>Home</span>
+                <Ripple />
+              </div>
+            </NavLink>
           </li>
           <li>
-            <div className='p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full'>
-              <i className='pi pi-heart mr-2'></i>
-              <NavLink
-                to='/favorites'
-                className='font-medium no-underline text-700'
-                onClick={handleVisible}
-              >
-                Favorites
-              </NavLink>
-              <Ripple />
-            </div>
+            <NavLink
+              to='/favourites'
+              className='no-underline'
+              onClick={handleVisible}
+            >
+              <div className='p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full'>
+                <i className='pi pi-heart mr-2'></i>
+                <span className='font-medium text-700'>Favourites</span>
+                <Ripple />
+              </div>
+            </NavLink>
           </li>
           <li>
-            <div className='p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full'>
-              <i className='pi pi-face-smile mr-2'></i>
-              <NavLink
-                to='/my-flats'
-                className='font-medium no-underline text-700'
-                onClick={handleVisible}
-              >
-                My Flats
-              </NavLink>
-              <Ripple />
-            </div>
+            <NavLink
+              to='/my-flats'
+              className='no-underline'
+              onClick={handleVisible}
+            >
+              <div className='p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full'>
+                <i className='pi pi-face-smile mr-2'></i>
+                <span className='font-medium text-700'>My Flats</span>
+                <Ripple />
+              </div>
+            </NavLink>
           </li>
           <li>
-            <div className='p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full'>
-              <i className='pi pi-plus mr-2'></i>
-              <NavLink
-                to='/new-flat'
-                className='font-medium no-underline text-700'
-                onClick={handleVisible}
-              >
-                New Flat
-              </NavLink>
-
-              <Ripple />
-            </div>
+            <NavLink
+              to='/new-flat'
+              className='no-underline'
+              onClick={handleVisible}
+            >
+              <div className='p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full'>
+                <i className='pi pi-plus mr-2'></i>
+                <span className='font-medium text-700'>New Flat</span>
+                <Ripple />
+              </div>
+            </NavLink>
           </li>
           {user && user.isAdmin === true && (
             <li>
-              <div className='p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full'>
-                <i className='pi pi-user mr-2'></i>
-                <NavLink
-                  to='/all-users'
-                  className='font-medium no-underline text-700'
-                  onClick={handleVisible}
-                >
-                  All Users
-                </NavLink>
-                <Ripple />
-              </div>
+              <NavLink
+                to='/all-users'
+                className='no-underline'
+                onClick={handleVisible}
+              >
+                <div className='p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full'>
+                  <i className='pi pi-user mr-2'></i>
+                  <span className='font-medium text-700'>All Users</span>
+                  <Ripple />
+                </div>
+              </NavLink>
             </li>
           )}
           <li>
@@ -109,33 +108,22 @@ const MainNavigation = ({ setVisible }) => {
       </div>
       <div className='mt-auto'>
         <hr className='mb-3 mx-3 border-top-1 border-none surface-border' />
-        <NavLink
-          to='/profile'
-          className='m-3 flex align-items-center cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple no-underline'
-          onClick={handleVisible}
-        >
-          {/* <div className="flex items-center">
-            <Avatar image={user?.profile} shape="circle" size="xlarge" />
-            <div className="ml-3">
-              <p className="font-bold mt-1">
-                {user?.firstName} {user?.lastName}
-              </p>
-              <p className="text-sm text-gray-500 mt-0 pt-0">{user?.email}</p>
-            </div>
-          </div> */}
-          <div className='mt-4 flex gap-2 align-items-center'>
-            <Avatar
-              image={user.profileImage}
-              imageAlt='{user.firstName} {user.lastName}'
-              className='mr-2'
-              size='large'
-              shape='circle'
-            />
-            <div>
-              <p className='font-bold m-0'>
-                {user.firstName} {user.lastName}
-              </p>
-              <p className='text-sm text-gray-500 m-0'>{user.email}</p>
+        <NavLink to='/profile' className='no-underline' onClick={handleVisible}>
+          <div className='m-3 flex align-items-center cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple'>
+            <div className='mt-4 flex gap-2 align-items-center'>
+              <Avatar
+                image={user.profileImage}
+                imageAlt='{user.firstName} {user.lastName}'
+                className='mr-2'
+                size='large'
+                shape='circle'
+              />
+              <div>
+                <p className='font-bold m-0'>
+                  {user.firstName} {user.lastName}
+                </p>
+                <p className='text-sm text-gray-500 m-0'>{user.email}</p>
+              </div>
             </div>
           </div>
         </NavLink>

@@ -4,10 +4,10 @@ import FlatSchema from "./FlatSchema";
 import { createFlat, updateFlat } from "../../services/flatService";
 import {
   deleteFlatImageFirebase,
-  uploadFlatImageFirebase,
+  // uploadFlatImageFirebase,
 } from "../../services/firebase";
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { uploadImage } from "../../utils/images";
 import { Toast } from "primereact/toast";
 import { formatDate } from "../../utils/date";
@@ -19,6 +19,8 @@ import { InputSwitch } from "primereact/inputswitch";
 import LoadingSkeleton from "../Commons/Misc/LoadingSkeleton";
 import MainButton from "../Commons/Buttons/MainButton";
 import { FileUpload } from "primereact/fileupload";
+import { toInt } from "validator";
+import ImageCropper from "../Commons/Misc/ImageCropper";
 
 const today = new Date();
 let minDate = new Date(today);
@@ -40,26 +42,31 @@ const validationSchema = FlatSchema({
   bathrooms: true,
 });
 
-const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
-  const [flatFile, setFlatFile] = useState(null);
+const FlatForm = ({ flat, onClose, setUpdated }) => {
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null); // To store the selected file temporarily
+  const [showCropper, setShowCropper] = useState(false); // To control the cropper visibility
   const toast = useRef(null);
   const navigate = useNavigate();
 
+  const location = useLocation();
+
+  const currentPath = location.pathname;
+
   const initialValues = {
-    city: initialFlat?.city || "",
-    streetName: initialFlat?.streetName || "",
-    streetNumber: initialFlat?.streetNumber || "",
-    areaSize: initialFlat?.areaSize || "",
-    hasAC: initialFlat?.hasAC || false,
-    yearBuilt: formatDate(initialFlat?.yearBuilt) || "",
-    rentPrice: initialFlat?.rentPrice || "",
-    dateAvailable: formatDate(initialFlat?.dateAvailable) || "",
-    image: initialFlat?.image || "",
-    rooms: initialFlat?.rooms || "",
-    bathrooms: initialFlat?.bathrooms || "",
+    city: flat?.city || "",
+    streetName: flat?.streetName || "",
+    streetNumber: flat?.streetNumber || "",
+    areaSize: flat?.areaSize || "",
+    hasAC: flat?.hasAC || false,
+    yearBuilt: formatDate(flat?.yearBuilt) || "",
+    rentPrice: flat?.rentPrice || "",
+    dateAvailable: formatDate(flat?.dateAvailable) || "",
+    image: flat?.image || "",
+    rooms: flat?.rooms || "",
+    bathrooms: flat?.bathrooms || "",
   };
 
   const formik = useFormik({
@@ -73,17 +80,18 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
       console.log("1. FLAT FORM SERVICE: values", values);
 
       try {
-        let imageUrl = initialFlat?.image || "";
-        console.log("2. FLAT FORM SERVICE: flatFile", flatFile);
-        if (flatFile) {
-          if (initialFlat?.image) {
-            await deleteFlatImageFirebase(initialFlat?.image); // Delete existing profile image
+        let imageUrl = flat?.image || "";
+
+        if (formik.values.image) {
+          if (flat?.image) {
+            await deleteFlatImageFirebase(flat.image); // Delete existing profile image
           }
-          imageUrl = await uploadFlatImageFirebase(flatFile); // Upload new resized image
+          imageUrl = formik.values.image; // Use the new uploaded image URL
         }
 
-        if (!isEditing) {
-          const response = await createFlat(values);
+        if (!flat) {
+          const newFlat = { ...(values || ""), image: imageUrl };
+          const response = await createFlat(newFlat);
           console.log("3. FLAT FORM SERVICE: createFlat response", response);
 
           if (response.status === 200) {
@@ -93,13 +101,20 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
             }, 2000);
           }
         } else {
-          const response = await updateFlat(values, imageUrl);
+          const updatedFlat = { ...flat, ...values, image: imageUrl };
+          const response = await updateFlat(flat._id, updatedFlat);
           console.log("4. FLAT FORM SERVICE: updateFlat response", response);
           if (response.status === 200) {
-            setSuccess(`Flat updated successfully!`);
+            setSuccess(`Flat has been updated successfully!`);
             setTimeout(() => {
-              setUpdated(true);
-            }, 1500);
+              if (currentPath.includes("/new")) {
+                // Navigate to '/home'
+                navigate("/my-flats");
+              } else if (currentPath.includes("/edit-users")) {
+                setUpdated((prev) => !prev); // Notify parent to refresh
+                onClose(); // Close the dialog
+              }
+            }, 2000);
           }
         }
       } catch (err) {
@@ -116,33 +131,20 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
   });
 
   const handleUploadImage = async ({ files }) => {
-    try {
-      const file = files[0];
-      if (!file) {
-        throw new Error("No file selected.");
-      }
-
-      const { downloadURL, resizedBuffer } = await uploadImage(file, "flat");
-
-      setSuccess("Image uploaded successfully!");
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Image uploaded successfully!",
-      });
-
-      console.log("Image URL:", downloadURL);
-
-      // Notify parent component of success
-      formik.setFieldValue("image", downloadURL);
-      setFlatFile(resizedBuffer);
-    } catch (error) {
-      setError(error.message || "Failed to upload image.");
-      console.error("Image upload error:", error);
-
-      // Notify parent component of failure
-      console.error("User image upload error:", error);
+    const file = files?.[0];
+    if (!file) {
+      console.error("No valid file received");
+      return;
     }
+
+    if (!file.type.startsWith("image/")) {
+      setError("Invalid file type. Please select an image.");
+      return;
+    }
+
+    console.log("File validated:", file.name);
+    setSelectedFile(file); // Temporarily store file
+    setShowCropper(true); // Show the cropper
   };
 
   toast.current.show({
@@ -259,7 +261,7 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
                 value={formik.values.yearBuilt}
                 // onChange={(e) => handleBirthdayChange(e.value)}
                 onChange={(e) =>
-                  formik.setFieldValue("yearBuilt", toString(e.value))
+                  formik.setFieldValue("yearBuilt", toInt(e.value))
                 }
                 inputStyle={{
                   borderLeft: "none",
@@ -410,17 +412,72 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
           accept='image/*'
           maxFileSize={2000000}
           emptyTemplate={
-            <p className='m-0'>Drag and drop images to here to upload.</p>
+            <p className='m-0'>Drag and drop images here to upload.</p>
           }
-          chooseLabel={initialFlat ? "Update Photo" : "Upload Photo"}
+          chooseLabel={flat ? "Update Photo" : "Upload Photo"}
           customUpload
           auto
           uploadHandler={handleUploadImage}
+          onBeforeUpload={() => console.log("Before upload triggered")}
+          onUpload={() => console.log("Upload successful")}
+          onError={(e) => console.error("Upload error:", e)}
         />
+
+        {selectedFile && showCropper && (
+          <div className='modal-overlay'>
+            <div className='modal-content'>
+              <h3>Crop Your Image</h3>
+              <ImageCropper
+                file={selectedFile}
+                aspect={16 / 9} // Pass aspect directly
+                onComplete={async (croppedBlob) => {
+                  try {
+                    const processedFile = new File(
+                      [croppedBlob],
+                      selectedFile.name,
+                      {
+                        type: selectedFile.type,
+                      }
+                    );
+
+                    const { downloadURL } = await uploadImage(
+                      processedFile,
+                      "user"
+                    );
+
+                    formik.setFieldValue("image", downloadURL);
+                    setShowCropper(false);
+                    setSelectedFile(null);
+
+                    toast.current.show({
+                      severity: "success",
+                      summary: "Success",
+                      detail: "Image uploaded successfully!",
+                    });
+                  } catch (error) {
+                    console.error("Error uploading cropped image:", error);
+                    toast.current.show({
+                      severity: "error",
+                      summary: "Error",
+                      detail: "Failed to upload cropped image.",
+                    });
+                  }
+                }}
+              />
+              <MainButton
+                label='Cancel'
+                onClick={() => {
+                  setShowCropper(false);
+                  setSelectedFile(null);
+                }}
+              />
+            </div>
+          </div>
+        )}
 
         <LoadingSkeleton loading={loading}>
           <MainButton
-            label={!initialFlat ? "Create Flat" : "Update Flat"}
+            label={!flat ? "Create Flat" : "Update Flat"}
             type='submit'
             disabled={loading}
           />
@@ -431,10 +488,9 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
 };
 
 FlatForm.propTypes = {
-  flatId: PropTypes.string,
-  initialFlat: PropTypes.object,
-  isEditing: PropTypes.bool,
-  onFormSubmit: PropTypes.func,
+  flat: PropTypes.object.isRequired,
+  onClose: PropTypes.func.isRequired,
+  setUpdated: PropTypes.func.isRequired,
 };
 
 export default FlatForm;

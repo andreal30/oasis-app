@@ -7,12 +7,12 @@ const HomePage = () => {
   const [flats, setFlats] = useState([]);
   const [filteredFlats, setFilteredFlats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updated, setUpdated] = useState(false);
 
   useEffect(() => {
     const fetchFlats = async () => {
       try {
         const data = await getFlats();
-        console.log("1. HOME PAGE: Fetched flats:", data);
         setFlats(data);
         setFilteredFlats(data);
       } catch (error) {
@@ -22,7 +22,7 @@ const HomePage = () => {
       }
     };
     fetchFlats();
-  }, []);
+  }, [updated]);
 
   const handleFilterChange = (filters) => {
     const filtered = flats.filter((flat) => {
@@ -37,8 +37,6 @@ const HomePage = () => {
         minBathrooms,
         maxBathrooms,
       } = filters;
-
-      console.log("1. HOME PAGE: HANDLE FILTER CHANGE: filters", filters);
 
       return (
         (!city || flat.city.toLowerCase().includes(city.toLowerCase())) &&
@@ -65,8 +63,6 @@ const HomePage = () => {
       return 0;
     });
 
-    console.log("1. HOME PAGE: HANDLE SORT CHANGE: sorted", sorted);
-
     setFilteredFlats(sorted);
   };
 
@@ -74,7 +70,7 @@ const HomePage = () => {
     setFilteredFlats(flats); // Reset to original flats
   };
 
-  if (loading) return <div>Loading flats...</div>;
+  // if (loading) return <div>Loading flats...</div>;
 
   return (
     <>
@@ -85,7 +81,11 @@ const HomePage = () => {
         resetFunction={resetFiltersAndSort}
         showFlat
       />
-      <FlatList flats={filteredFlats} />
+      <FlatList
+        flats={filteredFlats}
+        loading={loading}
+        setUpdated={setUpdated}
+      />
     </>
   );
 };

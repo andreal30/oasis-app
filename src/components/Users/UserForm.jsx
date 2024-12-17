@@ -22,11 +22,12 @@ import * as Yup from "yup";
 import { Toast } from "primereact/toast";
 import {
   deleteProfileImageFirebase,
-  uploadProfileImageFirebase,
+  // uploadProfileImageFirebase,
 } from "../../services/firebase";
 import LoadingSkeleton from "../Commons/Misc/LoadingSkeleton";
 import { isPasswordStrong } from "../../utils/validator";
 import { formatDate } from "../../utils/date";
+import ImageCropper from "../Commons/Misc/ImageCropper";
 
 //Min and Max Dates
 let today = new Date();
@@ -152,11 +153,13 @@ const updateSchema = UserSchema({
 });
 
 const UserForm = ({ user, onClose, setUpdated }) => {
-  const [profileFile, setProfileFile] = useState(null);
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const toast = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null); // To store the selected file temporarily
+  const [showCropper, setShowCropper] = useState(false); // To control the cropper visibility
+
   const navigate = useNavigate();
 
   const { login } = useAuth();
@@ -189,6 +192,8 @@ const UserForm = ({ user, onClose, setUpdated }) => {
     profileImage: user?.profileImage || null,
   };
 
+  console.log("1. USER FORM SERVICE: Initial values:", initialValuesUpdate);
+
   const currentPath = location.pathname;
   const registerPath =
     currentPath.includes("/register") || currentPath === "/register";
@@ -210,11 +215,12 @@ const UserForm = ({ user, onClose, setUpdated }) => {
 
       try {
         let imageUrl = user?.profileImage || "";
-        if (profileFile) {
+
+        if (formik.values.profileImage) {
           if (user?.profileImage) {
             await deleteProfileImageFirebase(user.profileImage); // Delete existing profile image
           }
-          imageUrl = await uploadProfileImageFirebase(profileFile); // Upload new resized image
+          imageUrl = formik.values.profileImage; // Use the new uploaded image URL
         }
 
         if (!isLoggedIn || registerPath) {
@@ -285,38 +291,70 @@ const UserForm = ({ user, onClose, setUpdated }) => {
   //   formik.setFieldTouched("birthDate", true);
   // };
 
+  // const handleUploadImage = async ({ files }) => {
+  //   const file = files?.[0];
+  //   if (!file) {
+  //     console.error("No valid file received");
+  //     return;
+  //   }
+
+  //   if (!file.type.startsWith("image/")) throw new Error("Invalid file type.");
+
+  //   console.log("File validated:", file.name);
+
+  //   try {
+  //     // const file = files[0];
+  //     // if (!file) {
+  //     //   throw new Error("No file selected.");
+  //     // }
+  //     console.log("File Details:", file.name, file.size, file.type);
+
+  //     const { downloadURL, resizedBuffer } = await uploadImage(file, "user");
+
+  //     // Notify parent component of success
+  //     formik.setFieldValue("profileImage", downloadURL);
+  //     setProfileFile(resizedBuffer);
+
+  //     toast.current.show({
+  //       severity: "success",
+  //       summary: "Success",
+  //       detail: "Image uploaded successfully!",
+  //     });
+
+  //     console.log("Image URL:", downloadURL);
+  //   } catch (error) {
+  //     toast.current.show({
+  //       severity: "error",
+  //       summary: "Error",
+  //       detail: error.message || "Failed to upload image.",
+  //     });
+
+  //     console.error("Image upload error:", error);
+
+  //     // Notify parent component of failure
+  //     console.error("User image upload error:", error);
+  //   }
+  // };
+
   const handleUploadImage = async ({ files }) => {
-    try {
-      const file = files[0];
-      if (!file) {
-        throw new Error("No file selected.");
-      }
+    const file = files?.[0];
+    if (!file) {
+      console.error("No valid file received");
+      return;
+    }
 
-      const { downloadURL, resizedBuffer } = await uploadImage(file, "user");
-
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Image uploaded successfully!",
-      });
-
-      console.log("Image URL:", downloadURL);
-
-      // Notify parent component of success
-      formik.setFieldValue("profileImage", downloadURL);
-      setProfileFile(resizedBuffer);
-    } catch (error) {
+    if (!file.type.startsWith("image/")) {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: error.message || "Failed to upload image.",
+        detail: "Invalid file type. Please select an image.",
       });
-
-      console.error("Image upload error:", error);
-
-      // Notify parent component of failure
-      console.error("User image upload error:", error);
+      return;
     }
+
+    console.log("File validated:", file.name);
+    setSelectedFile(file); // Temporarily store file
+    setShowCropper(true); // Show the cropper
   };
 
   const isAdministrator = user?.isAdmin || false;
@@ -341,6 +379,25 @@ const UserForm = ({ user, onClose, setUpdated }) => {
         onSubmit={formik.handleSubmit}
         className='w-full flex flex-column gap-3'
       >
+        <GeneralInput
+          id='firstName'
+          name='firstName'
+          value={formik.values.firstName}
+          onChange={formik.handleChange}
+          iconClass='user'
+          label='First Name'
+          type='text'
+        />
+
+        {formik.touched.firstName && formik.errors.firstName ? (
+          <MessageErrors
+            error={formik.errors.firstName}
+            touched={formik.touched.firstName}
+          />
+        ) : (
+          <div className='mt-0'></div>
+        )}
+
         <GeneralInput
           id='lastName'
           name='lastName'
@@ -490,13 +547,69 @@ const UserForm = ({ user, onClose, setUpdated }) => {
           accept='image/*'
           maxFileSize={2000000}
           emptyTemplate={
-            <p className='m-0'>Drag and drop images to here to upload.</p>
+            <p className='m-0'>Drag and drop images here to upload.</p>
           }
           chooseLabel={isLoggedIn ? "Update Photo" : "Upload Photo"}
           customUpload
           auto
           uploadHandler={handleUploadImage}
+          onBeforeUpload={() => console.log("Before upload triggered")}
+          onUpload={() => console.log("Upload successful")}
+          onError={(e) => console.error("Upload error:", e)}
         />
+
+        {selectedFile && showCropper && (
+          <div className='modal-overlay'>
+            <div className='modal-content'>
+              <h3>Crop Your Image</h3>
+              <ImageCropper
+                file={selectedFile}
+                aspect={1} // Pass aspect directly
+                // aspect={currentPath.includes("/flats") ? 16 / 9 : 1} // Pass aspect directly
+                onComplete={async (croppedBlob) => {
+                  try {
+                    const processedFile = new File(
+                      [croppedBlob],
+                      selectedFile.name,
+                      {
+                        type: selectedFile.type,
+                      }
+                    );
+
+                    const { downloadURL } = await uploadImage(
+                      processedFile,
+                      "user"
+                    );
+
+                    formik.setFieldValue("profileImage", downloadURL);
+                    setShowCropper(false);
+                    setSelectedFile(null);
+
+                    toast.current.show({
+                      severity: "success",
+                      summary: "Success",
+                      detail: "Image uploaded successfully!",
+                    });
+                  } catch (error) {
+                    console.error("Error uploading cropped image:", error);
+                    toast.current.show({
+                      severity: "error",
+                      summary: "Error",
+                      detail: "Failed to upload cropped image.",
+                    });
+                  }
+                }}
+              />
+              <MainButton
+                label='Cancel'
+                onClick={() => {
+                  setShowCropper(false);
+                  setSelectedFile(null);
+                }}
+              />
+            </div>
+          </div>
+        )}
 
         <LoadingSkeleton loading={loading}>
           <MainButton

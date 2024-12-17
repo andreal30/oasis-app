@@ -148,7 +148,7 @@ const FlatDetailsPage = ({ flat }) => {
 };
 
 FlatDetailsPage.propTypes = {
-  flat: PropTypes.object.isRequired,
+  flat: PropTypes.object,
 };
 
 export default FlatDetailsPage;
