@@ -315,3 +315,56 @@ input:-webkit-autofill {
   border: 1px solid var(--main-300);
   opacity: 0.7;
 }
+
+/* Login Panel */
+.auth-logo {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  z-index: 10;
+  width: 4rem;
+  /* Ajusta el tamaño del logo */
+  height: auto;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .slider-container {
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 100%;
+    overflow: visible;
+    /* Ensure no content is clipped */
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    width: 100%;
+  }
+
+  .sign-in-container,
+  .sign-up-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    transition: none;
+    /* Remove slide animations */
+  }
+
+  .overlay-container {
+    display: none;
+    /* Remove overlay completely */
+  }
+
+  .mobile-toggle {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}

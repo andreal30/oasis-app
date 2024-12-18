@@ -16,6 +16,7 @@ import MyFlatsPage from "../../pages/MyFlatsPage";
 import EditFlatPage from "../../pages/EditFlatPage";
 import FlatDetailsPage from "../../pages/FlatDetailsPage";
 import UpdatePasswordPage from "../../pages/UpdatePasswordPage";
+import SliderAuth from "../Auth/SliderAuth";
 import { PrivateRoute, PublicLayout } from "./PrivateRoute";
 
 const router = createBrowserRouter([
@@ -35,7 +36,9 @@ const router = createBrowserRouter([
             // Public routes
             element: <Outlet />,
             children: [
-              { path: "/", element: <LoginPage /> },
+              // { path: "/", element: <LoginPage /> },
+              { path: "/", element: <SliderAuth /> },
+              { path: "/auth", element: <SliderAuth /> },
               { path: "/login", element: <LoginPage /> },
               { path: "/register", element: <RegisterPage /> },
               { path: "/forgot-password", element: <ForgotPasswordPage /> },

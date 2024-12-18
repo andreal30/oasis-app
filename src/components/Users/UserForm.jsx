@@ -425,7 +425,7 @@ const UserForm = ({ user, onClose, setUpdated }) => {
           iconClass='at'
           label='Email'
           type='email'
-          disabled={!registerPath ? true : false}
+          // disabled={!registerPath ? true : false}
         />
 
         {formik.touched.email && formik.errors.email ? (
@@ -444,7 +444,7 @@ const UserForm = ({ user, onClose, setUpdated }) => {
           onChange={formik.handleChange}
           iconClass='face-smile'
           label='Username'
-          disabled={!registerPath ? true : false}
+          // disabled={!registerPath ? true : false}
         />
 
         {formik.touched.username && formik.errors.username ? (
