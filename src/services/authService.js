@@ -7,6 +7,7 @@ import {
   registerApi,
   resetPasswordApi,
 } from "../api/authApi";
+import { clearLocal } from "../utils/localStorage";
 
 export const loginUser = async (emailOrUsername, password) => {
   try {
@@ -33,6 +34,9 @@ export const loginUser = async (emailOrUsername, password) => {
 export const LogoutUser = async () => {
   await logoutApi();
   clearToken();
+  clearLocal("loggedInUser");
+  clearLocal("jwtToken");
+  clearLocal("decodedUser");
 };
 
 export const registerUser = (userData) => {

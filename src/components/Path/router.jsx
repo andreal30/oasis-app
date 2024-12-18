@@ -19,6 +19,9 @@ import UpdatePasswordPage from "../../pages/UpdatePasswordPage";
 // import SliderAuth from "../Auth/SliderAuth";
 import { PrivateRoute, PublicLayout } from "./PrivateRoute";
 import LoginRegisterPage from "../../pages/LoginRegisterPage";
+// import { GoogleOAuthProvider } from "@react-oauth/google";
+
+// const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const router = createBrowserRouter([
   {
@@ -29,7 +32,9 @@ const router = createBrowserRouter([
         // Public Routes Layout
         element: (
           <AuthProvider>
+            {/* <GoogleOAuthProvider clientId={clientId}> */}
             <PublicLayout />
+            {/* </GoogleOAuthProvider> */}
           </AuthProvider>
         ),
         children: [

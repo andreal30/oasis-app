@@ -2,8 +2,11 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "./hooks/useAuth";
 import { getToken } from "./utils/tokenUtils";
+import useTokenWatcher from "./hooks/useTokenWatcher";
 
 function App() {
+  useTokenWatcher();
+
   const navigate = useNavigate();
   const { logout, user } = useAuth();
 
