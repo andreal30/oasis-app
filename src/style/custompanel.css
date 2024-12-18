@@ -60,11 +60,13 @@
   font-family: var(--font-family);
   width: 100%;
 }
+
 .input-main:hover,
 .input-password .p-icon-field-right .p-password-input.p-inputtext:hover,
 .input-number .p-inputnumber-input:hover {
   border-color: var(--input-hover-border);
 }
+
 .input-main:focus,
 .input-password .p-icon-field-right .p-password-input.p-inputtext:enabled:focus,
 .input-number .p-inputnumber-input:enabled:focus {
@@ -72,12 +74,15 @@
   outline: none;
   box-shadow: none;
 }
+
 .input-number.left-3 .p-inputnumber-input {
   padding-inline-start: 2.25rem;
 }
+
 .input-error {
   border-color: var(--input-error-border);
 }
+
 input:-webkit-autofill {
   background-color: var(--input-bg) !important;
   color: var(--input-text-color) !important;
@@ -90,6 +95,7 @@ input:-webkit-autofill {
   width: 100%;
   border-radius: 30px;
 }
+
 .input-password .p-icon-field-right .p-password-input {
   padding-left: 2.75rem;
 }
@@ -98,6 +104,7 @@ input:-webkit-autofill {
   background-color: var(--button-bg);
   border-color: var(--buttonbg);
 }
+
 .p-selectbutton .p-button.p-highlight:hover {
   background-color: var(--button-hover-bg);
   border-color: var(--button-hover-bg);
@@ -137,12 +144,14 @@ input:-webkit-autofill {
   box-shadow: none;
   transition: background-color 0.3s;
 }
+
 .my-btn:hover {
   background-color: var(--button-hover-bg);
   color: var(--button-hover-text-color);
   outline: var(--button-hover-bg);
   box-shadow: none;
 }
+
 .my-btn:active,
 .my-btn:focus {
   background-color: var(--button-active-bg);
@@ -160,10 +169,12 @@ input:-webkit-autofill {
   cursor: pointer;
   transition: background-color 0.3s;
 }
+
 .btn-secondary:hover {
   background-color: var(--button-secondary-hover-bg);
   color: var(--button-secondary-hover-text-color);
 }
+
 .btn-secondary:active,
 .btn-secondary:focus {
   background-color: var(--button-secondary-active-bg);
@@ -182,6 +193,7 @@ input:-webkit-autofill {
   transition: all 0.3s ease-in-out;
   background-color: var(--gray-0);
 }
+
 .btn-link:hover,
 .btn-link:active,
 .btn-link:focus {
@@ -208,16 +220,17 @@ input:-webkit-autofill {
   box-shadow: var(--shadow-1);
   transition: all 0.3s ease-in-out;
 }
+
 .card-main:hover {
   box-shadow: var(--shadow-2);
 }
 
 /* Input switch */
-.p-inputswitch:not(.p-disabled):has(.p-inputswitch-input:hover)
-  .p-inputswitch-slider {
+.p-inputswitch:not(.p-disabled):has(.p-inputswitch-input:hover) .p-inputswitch-slider {
   background-color: var(--gray-200);
   border-color: var(--gray-200);
 }
+
 .p-inputswitch.p-highlight .p-inputswitch-slider {
   background: var(--main-500);
   border-color: var(--main-500);
@@ -240,12 +253,66 @@ input:-webkit-autofill {
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
 }
+
 .p-dialog .p-dialog-content:last-of-type {
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
 }
+
 .p-dialog-content::-webkit-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
   display: none;
+}
+
+.auth-logo {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  z-index: 10;
+  width: 4rem;
+  /* Ajusta el tamaño del logo */
+  height: auto;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .slider-container {
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 100%;
+    overflow: visible;
+    /* Ensure no content is clipped */
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    width: 100%;
+  }
+
+  .sign-in-container,
+  .sign-up-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    transition: none;
+    /* Remove slide animations */
+  }
+
+  .overlay-container {
+    display: none;
+    /* Remove overlay completely */
+  }
+
+  .mobile-toggle {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
 }

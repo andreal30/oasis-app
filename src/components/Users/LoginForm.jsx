@@ -49,7 +49,7 @@ const LoginForm = () => {
         console.error("Login failed:", err);
         setError(
           err.response?.data?.message ||
-            "Oops! Something went wrong. Please check your credentials and try again."
+          "Oops! Something went wrong. Please check your credentials and try again."
         );
       } finally {
         setLoading(false);
@@ -77,6 +77,7 @@ const LoginForm = () => {
           iconClass='at'
           label='Email or Username'
           disabled={loading}
+          style={{ marginBottom: '1rem' }} // Add margin-bottom to prevent overlap
         />
 
         {formik.touched.emailOrUsername && formik.errors.emailOrUsername ? (

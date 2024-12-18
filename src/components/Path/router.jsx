@@ -5,14 +5,15 @@ import ResetPasswordPage from "../../pages/ResetPasswordPage";
 import ProfilePage from "../../pages/ProfilePage";
 import FavouritesPage from "../../pages/FavouritesPage";
 import NewFlatPage from "../../pages/NewFlatPage";
-import LoginPage from "../../pages/LoginPage";
+//import LoginPage from "../../pages/LoginPage";
 import RootLayout from "../../pages/RootLayout";
 import ForgotPasswordPage from "../../pages/ForgotPasswordPage";
-import RegisterPage from "../../pages/RegisterPage";
+//import RegisterPage from "../../pages/RegisterPage";
 import { AuthProvider } from "../../contexts/authContext";
 import AllUsersPage from "../../pages/AllUsersPage";
 import UpdateProfilePage from "../../pages/UpdateProfilePage";
 import MyFlatsPage from "../../pages/MyFlatsPage";
+import SliderAuth from "../Auth/SliderAuth";
 // import UserList from "../Users/UserList";
 
 const router = createBrowserRouter([
@@ -29,9 +30,8 @@ const router = createBrowserRouter([
         // Public routes
         element: <Outlet />,
         children: [
-          { path: "/", element: <LoginPage /> },
-          { path: "/login", element: <LoginPage /> },
-          { path: "/register", element: <RegisterPage /> },
+          { path: "/", element: <SliderAuth /> },
+          { path: "/auth", element: <SliderAuth /> },
           { path: "/forgot-password", element: <ForgotPasswordPage /> },
           { path: "/reset-password/:token", element: <ResetPasswordPage /> },
         ],

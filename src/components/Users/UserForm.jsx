@@ -64,11 +64,11 @@ const commonPasswords = [
 ]; // Add more if needed
 
 const registerSchema = UserSchema({
-    confirmPassword: true,
-    name: true,
-    birthDate: true,
-    terms: true,
-  }),
+  confirmPassword: true,
+  name: true,
+  birthDate: true,
+  terms: true,
+}),
   registerUniqueSchema = Yup.object({
     email: Yup.string()
       .email(
@@ -135,8 +135,8 @@ const registerSchema = UserSchema({
       value
         ? Yup.string().required("Profile image is required when provided.")
         : Yup.string().default(
-            "https://firebasestorage.googleapis.com/v0/b/oasis-88f63.firebasestorage.app/o/profileImages%2Fuser.jpg?alt=media&token=961aa4c1-6967-40cc-bd00-187a2c4654e5"
-          )
+          "https://firebasestorage.googleapis.com/v0/b/oasis-88f63.firebasestorage.app/o/profileImages%2Fuser.jpg?alt=media&token=961aa4c1-6967-40cc-bd00-187a2c4654e5"
+        )
     ),
   });
 
@@ -339,8 +339,27 @@ const UserForm = ({ user, onClose, setUpdated }) => {
       <form
         id='UserForm'
         onSubmit={formik.handleSubmit}
-        className='w-full flex flex-column gap-3'
+        className='w-full flex flex-column gap-0.5'
       >
+        <GeneralInput
+          id='firstName'
+          name='firstName'
+          value={formik.values.firstName}
+          onChange={formik.handleChange}
+          iconClass='user'
+          label='First Name'
+          type='text'
+        />
+
+        {formik.touched.firstName && formik.errors.firstName ? (
+          <MessageErrors
+            error={formik.errors.firstName}
+            touched={formik.touched.firstName}
+          />
+        ) : (
+          <div className='mt-0'></div>
+        )}
+
         <GeneralInput
           id='lastName'
           name='lastName'
@@ -368,7 +387,6 @@ const UserForm = ({ user, onClose, setUpdated }) => {
           iconClass='at'
           label='Email'
           type='email'
-          disabled={!registerPath ? true : false}
         />
 
         {formik.touched.email && formik.errors.email ? (
@@ -387,7 +405,7 @@ const UserForm = ({ user, onClose, setUpdated }) => {
           onChange={formik.handleChange}
           iconClass='face-smile'
           label='Username'
-          disabled={!registerPath ? true : false}
+          disabled={false}
         />
 
         {formik.touched.username && formik.errors.username ? (
