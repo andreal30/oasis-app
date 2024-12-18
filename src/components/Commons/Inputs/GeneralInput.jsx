@@ -18,6 +18,7 @@ const GeneralInput = ({
   className = "",
   disabled = false,
   autocomplete = "on", // Default to 'on'
+  widthClass = "w-full",
 }) => {
   const handleNumberChange = (e) => {
     onChange(e); // Handle numeric inputs
@@ -36,11 +37,11 @@ const GeneralInput = ({
     : null;
 
   return (
-    <FloatLabel>
-      <IconField iconPosition='left' className='w-full text-400'>
+    <FloatLabel className={` text-400 ${widthClass} `}>
+      <IconField iconPosition='left'>
         {iconPh ? (
           <Suspense fallback={<span>Loading icon...</span>}>
-            <DynamicIcon />
+            <DynamicIcon className={`p-input-icon text-400`} />
           </Suspense>
         ) : (
           <InputIcon className={`pl-1 text-400 pi pi-${iconClass}`} />
@@ -52,7 +53,7 @@ const GeneralInput = ({
             name={name}
             value={value}
             onValueChange={handleNumberChange} // Call the number handler
-            className={`w-full input-main ${className}`}
+            className={`w-full input-number left-3 ${className}`}
             mode='decimal'
             disabled={disabled}
             autoComplete={autocomplete} // Add autocomplete
@@ -94,6 +95,7 @@ GeneralInput.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
   autocomplete: PropTypes.string, // New prop
+  widthClass: PropTypes.string,
 };
 
 export default GeneralInput;

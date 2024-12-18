@@ -3,7 +3,7 @@ import FlatItem from "./FlatItem";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { deleteFlat } from "../../services/flatService";
 
-const FlatList = ({ flats, onFlatDeleted, setUpdated }) => {
+const FlatList = ({ flats, onFlatDeleted, setUpdated, loading }) => {
   const handleDeleteRequest = (flatId) => {
     confirmDialog({
       message: "Are you sure you want to delete this flat?",
@@ -13,7 +13,6 @@ const FlatList = ({ flats, onFlatDeleted, setUpdated }) => {
       accept: async () => {
         try {
           await deleteFlat(flatId);
-          console.log("1. FLAT LIST: Flat deleted successfully");
           if (onFlatDeleted) onFlatDeleted(flatId);
         } catch (err) {
           console.error("Error deleting flat:", err);
@@ -26,12 +25,13 @@ const FlatList = ({ flats, onFlatDeleted, setUpdated }) => {
 
   return (
     <div className='grid'>
-      {flats.map((flat) => (
-        <div key={flat.flatId || flat._id} className='col-12 md:col-6 lg:col-4'>
+      {flats.map((flat, index) => (
+        <div key={index} className='col-12 md:col-6 lg:col-4'>
           <FlatItem
             flat={flat}
-            onDeleteRequest={handleDeleteRequest}
+            onDeleteRequest={() => handleDeleteRequest(flat._id)}
             setUpdated={setUpdated}
+            loading={loading}
           />
         </div>
       ))}
@@ -44,6 +44,7 @@ FlatList.propTypes = {
   flats: PropTypes.array.isRequired,
   onFlatDeleted: PropTypes.func,
   setUpdated: PropTypes.func,
+  loading: PropTypes.bool,
 };
 
 export default FlatList;

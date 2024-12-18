@@ -10,7 +10,6 @@ import {
 export const getFlats = async () => {
   try {
     const response = await getFlatsApi();
-    console.log("2. GET FLATS SERVICE: response", response);
     return response.data; // Return the list of flats and metadata
   } catch (error) {
     console.error("Error fetching flats:", error.message || error);
