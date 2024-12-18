@@ -3,7 +3,7 @@ import { Calendar } from "primereact/calendar";
 import { FileUpload } from "primereact/fileupload";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputSwitch } from "primereact/inputswitch";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import GeneralInput from "../Commons/Inputs/GeneralInput";
 import MainButton from "../Commons/Buttons/MainButton";
@@ -25,7 +25,7 @@ import {
   // uploadProfileImageFirebase,
 } from "../../services/firebase";
 import LoadingSkeleton from "../Commons/Misc/LoadingSkeleton";
-import { isPasswordStrong } from "../../utils/validator";
+// import { isPasswordStrong } from "../../utils/validator";
 import { formatDate } from "../../utils/date";
 import ImageCropper from "../Commons/Misc/ImageCropper";
 
@@ -68,7 +68,7 @@ const registerSchema = UserSchema({
     confirmPassword: true,
     name: true,
     birthDate: true,
-    terms: true,
+    // terms: true,
   }),
   registerUniqueSchema = Yup.object({
     email: Yup.string()
@@ -118,13 +118,9 @@ const registerSchema = UserSchema({
         "Wow, that’s a long password! Let’s keep it under 100 characters, okay?"
       )
       .matches(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]{8,}$/,
-        "For extra safety, include at least one letter, one number, and one special character!"
-      )
-      .test(
-        "isPasswordStrong",
-        "Your password must include at least one uppercase letter, one lowercase letter, one number, and one special character.",
-        (value) => isPasswordStrong(value)
+        // /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]{8,}$/,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])[A-Za-z\d@$!%*?&#]{8,}$/,
+        "Your password must include at least one uppercase letter, one lowercase letter, one number, and one special character!"
       )
       .test(
         "notCommonPassword",
@@ -132,6 +128,11 @@ const registerSchema = UserSchema({
         (value) => !commonPasswords.includes(value.toLowerCase())
       )
       .required("Please set a strong password for your account."),
+    // .test(
+    //   "isPasswordStrong",
+    //   "Your password must include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+    //   (value) => isPasswordStrong(value)
+    // )
     profileImage: Yup.lazy((value) =>
       value
         ? Yup.string().required("Profile image is required when provided.")
@@ -177,7 +178,7 @@ const UserForm = ({ user, onClose, setUpdated }) => {
     birthDate: null,
     admin: false,
     profileImage: null,
-    terms: false,
+    // terms: false,
   };
 
   const initialValuesUpdate = {
@@ -187,7 +188,7 @@ const UserForm = ({ user, onClose, setUpdated }) => {
     // confirmPassword: "",
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
-    birthDate: formatDate(user?.birthDate) || null,
+    birthDate: formatDate(user?.birthDate) || user?.birthDate || null,
     admin: user?.isAdmin || false,
     profileImage: user?.profileImage || null,
   };
@@ -234,7 +235,9 @@ const UserForm = ({ user, onClose, setUpdated }) => {
             birthDate: values.birthDate || new Date() || null,
             isAdmin: false,
           };
+          console.log("1. UPDATE FLAT SERVICE: userData", userData);
           const newUser = await registerUser(userData);
+          console.log("2. UPDATE FLAT SERVICE: newUser", newUser);
 
           const response = await login(newUser.email, values.password);
 
@@ -260,9 +263,11 @@ const UserForm = ({ user, onClose, setUpdated }) => {
             // profileImage: imageUrl,
             // isAdmin: values.admin,
           };
+          console.log("2. UPDATE FLAT SERVICE: updatedData", updatedData);
 
           const response = await updateUserProfile(user._id, updatedData);
           //   onClose();
+          console.log("3. UPDATE FLAT SERVICE: response", response);
 
           if (response.status === 200) {
             setSuccess(`Profile has been updated successfully!`);
@@ -359,6 +364,14 @@ const UserForm = ({ user, onClose, setUpdated }) => {
 
   const isAdministrator = user?.isAdmin || false;
 
+  useEffect(() => {
+    if (registerPath) {
+      console.log("Resetting birthDate");
+      formik.setFieldValue("birthDate", null);
+    }
+    // Only run this effect when `registerPath` changes
+  }, [registerPath, formik]);
+
   return (
     <>
       {error && <Messages severity='error' text={error} />}
@@ -377,7 +390,7 @@ const UserForm = ({ user, onClose, setUpdated }) => {
       <form
         id='UserForm'
         onSubmit={formik.handleSubmit}
-        className='w-full flex flex-column gap-3'
+        className='w-full flex flex-column gap-0-75'
       >
         <GeneralInput
           id='firstName'
@@ -462,20 +475,21 @@ const UserForm = ({ user, onClose, setUpdated }) => {
               <i className='pi pi-calendar text-400'></i>
             </span>
             <Calendar
+              key={formik.values.birthDate} // Force re-render if value changes
               inputId='birthDate'
               name='birthDate'
-              value={formik.values.birthDate}
+              value={formik.values.birthDate || null}
               // onChange={(e) => handleBirthdayChange(e.value)}
               onChange={(e) => formik.setFieldValue("birthDate", e.value)}
               inputStyle={{
-                borderLeft: "none",
                 borderRadius: "30px",
                 paddingInlineStart: "2.75rem",
               }}
               minDate={minDate}
               maxDate={maxDate}
-              dateFormat='dd/mm/yy'
-              className='input-main w-full'
+              dateFormat='dd/M/yy'
+              className='input-number w-full'
+              autoComplete='off' // Prevent browser auto-fill
             />
           </div>
           <label htmlFor='birthDate' className='left-3 text-400'>
