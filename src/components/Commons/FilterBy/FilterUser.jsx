@@ -5,6 +5,8 @@ import { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import MainButton from "../Buttons/MainButton";
 import IconButton from "../Buttons/IconButton";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 
 const FilterUser = ({ onFilterChange, onClearFilters }) => {
   const [filters, setFilters] = useState({
@@ -55,55 +57,49 @@ const FilterUser = ({ onFilterChange, onClearFilters }) => {
           {/* Age Range */}
           <p className='mb-1 font-semibold'>Age Range</p>
           <div className='flex gap-2'>
-            <div className='input-group w-full'>
-              <span className='p-input-icon-left'>
-                <i className='pi pi-calendar'></i>
-                <InputNumber
-                  value={filters.minAge}
-                  onValueChange={(e) => handleInputChange("minAge", e.value)}
-                  placeholder='Min Age'
-                  className='input-number left-3'
-                />
-              </span>
-            </div>
-            <div className='input-group w-full'>
-              <span className='p-input-icon-left'>
-                <i className='pi pi-calendar'></i>
-                <InputNumber
-                  value={filters.maxAge}
-                  onValueChange={(e) => handleInputChange("maxAge", e.value)}
-                  placeholder='Max Age'
-                  className='input-number left-3'
-                />
-              </span>
-            </div>
+            <IconField iconPosition='left'>
+              <InputIcon className='pi pi-calendar'> </InputIcon>
+              <InputNumber
+                value={filters.minAge}
+                onValueChange={(e) => handleInputChange("minAge", e.value)}
+                placeholder='Min Age'
+                className='input-number left-3'
+              />
+            </IconField>
+
+            <IconField iconPosition='left'>
+              <InputIcon className='pi pi-calendar'> </InputIcon>
+              <InputNumber
+                value={filters.maxAge}
+                onValueChange={(e) => handleInputChange("maxAge", e.value)}
+                placeholder='Max Age'
+                className='input-number left-3'
+              />
+            </IconField>
           </div>
 
           {/* Number of Flats */}
           <p className='mb-1 font-semibold'>Number of Flats</p>
           <div className='flex gap-2'>
-            <div className='input-group w-full'>
-              <span className='p-input-icon-left'>
-                <i className='pi pi-home'></i>
-                <InputNumber
-                  value={filters.minFlats}
-                  onValueChange={(e) => handleInputChange("minFlats", e.value)}
-                  placeholder='Min Flats'
-                  className='input-number left-3'
-                />
-              </span>
-            </div>
-            <div className='input-group w-full'>
-              <span className='p-input-icon-left'>
-                <i className='pi pi-home'></i>
-                <InputNumber
-                  value={filters.maxFlats}
-                  onValueChange={(e) => handleInputChange("maxFlats", e.value)}
-                  placeholder='Max Flats'
-                  className='input-number left-3'
-                />
-              </span>
-            </div>
+            <IconField iconPosition='left'>
+              <InputIcon className='pi pi-home'> </InputIcon>
+              <InputNumber
+                value={filters.minFlats}
+                onValueChange={(e) => handleInputChange("minFlats", e.value)}
+                placeholder='Min Flats'
+                className='input-number left-3'
+              />
+            </IconField>
+
+            <IconField iconPosition='left'>
+              <InputIcon className='pi pi-home'> </InputIcon>
+              <InputNumber
+                value={filters.maxFlats}
+                onValueChange={(e) => handleInputChange("maxFlats", e.value)}
+                placeholder='Max Flats'
+                className='input-number left-3'
+              />
+            </IconField>
           </div>
 
           {/* Admin Status */}
@@ -111,10 +107,15 @@ const FilterUser = ({ onFilterChange, onClearFilters }) => {
           <SelectButton
             value={filters.isAdmin}
             options={adminOptions}
+            className='border-round-3xl'
             onChange={(e) => handleInputChange("isAdmin", e.value)}
           />
 
-          <MainButton label='Clear Filters' onClick={clearFilters} />
+          <MainButton
+            className='mt-2'
+            label='Clear Filters'
+            onClick={clearFilters}
+          />
         </div>
       </OverlayPanel>
     </div>

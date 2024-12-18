@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { Avatar } from "primereact/avatar";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import MessageForm from "../components/Messages/MessageForm";
-import MessageList from "../components/Messages/MessageList";
+// import MessageForm from "../components/Messages/MessageForm";
+// import MessageList from "../components/Messages/MessageList";
 // import FlatImg from './../images/apt-21.jpg';
 import useAuth from "../hooks/useAuth";
 import { Bathtub, Bed } from "@phosphor-icons/react";
@@ -133,7 +133,7 @@ const FlatDetailsPage = ({ flat }) => {
         </div>
       </div>
       {/* Messages list */}
-      <MessageList
+      {/* <MessageList
         flatId={flat.flatId}
         userEmail={user.email}
         isAdmin={user.isAdmin}
@@ -142,13 +142,13 @@ const FlatDetailsPage = ({ flat }) => {
         flatId={flat.flatId}
         userEmail={user.email}
         isAdmin={user.isAdmin}
-      />
+      /> */}
     </>
   );
 };
 
 FlatDetailsPage.propTypes = {
-  flat: PropTypes.object.isRequired,
+  flat: PropTypes.object,
 };
 
 export default FlatDetailsPage;

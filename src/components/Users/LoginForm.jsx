@@ -77,6 +77,7 @@ const LoginForm = () => {
           iconClass='at'
           label='Email or Username'
           disabled={loading}
+          style={{ marginBottom: "1rem" }} // Add margin-bottom to prevent overlap
         />
 
         {formik.touched.emailOrUsername && formik.errors.emailOrUsername ? (

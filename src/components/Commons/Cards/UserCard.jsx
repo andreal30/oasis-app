@@ -119,8 +119,8 @@ const UserCard = ({
             </li>
             <li className='pt-3 '>
               <span
-                className={`border-1 border-round-xl border-300 border-indigo-300 p-2 ${
-                  user.isAdmin ? "bg-main-100" : "bg-main-50"
+                className={`border-1 border-round-xl border-main-300 border-indigo-300 p-2 ${
+                  user.isAdmin ? "bg-main-200" : "bg-main-50"
                 }`}
               >
                 {user.isAdmin ? "Is Admin" : "Not Admin"}

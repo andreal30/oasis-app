@@ -3,153 +3,131 @@ import PropTypes from "prop-types";
 import FlatSchema from "./FlatSchema";
 import { createFlat, updateFlat } from "../../services/flatService";
 import {
-  deleteFlatImageFirebase,
   uploadFlatImageFirebase,
+  deleteFlatImageFirebase,
 } from "../../services/firebase";
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { uploadImage } from "../../utils/images";
+import { useState, useRef } from "react";
 import { Toast } from "primereact/toast";
-import { formatDate } from "../../utils/date";
-import { Calendar, CalendarBlank, CalendarStar } from "@phosphor-icons/react";
-import MessageErrors from "../Commons/Inputs/MessageErrors";
-import { FloatLabel } from "primereact/floatlabel";
 import GeneralInput from "../Commons/Inputs/GeneralInput";
-import { InputSwitch } from "primereact/inputswitch";
-import LoadingSkeleton from "../Commons/Misc/LoadingSkeleton";
+import MessageErrors from "../Commons/Inputs/MessageErrors";
+// import LoadingSkeleton from "../Commons/Misc/LoadingSkeleton";
 import MainButton from "../Commons/Buttons/MainButton";
 import { FileUpload } from "primereact/fileupload";
+import ImageCropper from "../Commons/Misc/ImageCropper";
+import { Calendar } from "primereact/calendar";
+import { FloatLabel } from "primereact/floatlabel";
+import { InputSwitch } from "primereact/inputswitch";
+import { formatDate } from "../../utils/date";
+import { CalendarBlank, CalendarStar } from "@phosphor-icons/react";
+import { toInt } from "validator";
 
+// Min and Max Dates
 const today = new Date();
-let minDate = new Date(today);
-let maxDate = new Date(today);
-const minYear = new Date(1900, 0, 1);
-const maxYear = new Date(new Date().getFullYear(), 11, 31); // Current year
+const minDate = new Date(today);
+const maxDate = new Date(today);
+minDate.setDate(today.getDate() + 1); // Available starting tomorrow
+maxDate.setFullYear(today.getFullYear() + 2); // Up to 2 years in the future
 
-maxDate.setFullYear(today.getFullYear() + 2);
-
-const validationSchema = FlatSchema({
-  city: true,
-  streetName: true,
-  streetNumber: true,
-  areaSize: true,
-  yearBuilt: true,
-  rentPrice: true,
-  dateAvailable: true,
-  rooms: true,
-  bathrooms: true,
-});
-
-const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
-  const [flatFile, setFlatFile] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [error, setError] = useState(null);
+const FlatForm = ({ flat, onClose, setUpdated }) => {
   const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
   const toast = useRef(null);
-  const navigate = useNavigate();
 
   const initialValues = {
-    city: initialFlat?.city || "",
-    streetName: initialFlat?.streetName || "",
-    streetNumber: initialFlat?.streetNumber || "",
-    areaSize: initialFlat?.areaSize || "",
-    hasAC: initialFlat?.hasAC || false,
-    yearBuilt: formatDate(initialFlat?.yearBuilt) || "",
-    rentPrice: initialFlat?.rentPrice || "",
-    dateAvailable: formatDate(initialFlat?.dateAvailable) || "",
-    image: initialFlat?.image || "",
-    rooms: initialFlat?.rooms || "",
-    bathrooms: initialFlat?.bathrooms || "",
+    city: flat?.city || "",
+    streetName: flat?.streetName || "",
+    streetNumber: flat?.streetNumber || "",
+    areaSize: flat?.areaSize || "",
+    hasAc: flat?.hasAc || false,
+    yearBuilt: formatDate(flat?.yearBuilt) || "",
+    rentPrice: flat?.rentPrice || "",
+    dateAvailable: flat?.dateAvailable || null,
+    image: flat?.image || "",
+    rooms: flat?.rooms || "",
+    bathrooms: flat?.bathrooms || "",
   };
+
+  const validationSchema = FlatSchema({
+    city: true,
+    streetName: true,
+    streetNumber: true,
+    areaSize: true,
+    yearBuilt: true,
+    rentPrice: true,
+    dateAvailable: true,
+    rooms: true,
+    bathrooms: true,
+  });
 
   const formik = useFormik({
     initialValues,
     validationSchema,
     onSubmit: async (values) => {
-      setError(null);
-      setSuccess(null);
       setLoading(true);
 
-      console.log("1. FLAT FORM SERVICE: values", values);
-
       try {
-        let imageUrl = initialFlat?.image || "";
-        console.log("2. FLAT FORM SERVICE: flatFile", flatFile);
-        if (flatFile) {
-          if (initialFlat?.image) {
-            await deleteFlatImageFirebase(initialFlat?.image); // Delete existing profile image
-          }
-          imageUrl = await uploadFlatImageFirebase(flatFile); // Upload new resized image
+        let imageUrl = flat?.image || "";
+
+        if (selectedFile) {
+          if (flat?.image) await deleteFlatImageFirebase(flat.image);
+          const { downloadURL } = await uploadFlatImageFirebase(
+            selectedFile,
+            "flats"
+          );
+          imageUrl = downloadURL;
         }
 
-        if (!isEditing) {
-          const response = await createFlat(values);
-          console.log("3. FLAT FORM SERVICE: createFlat response", response);
+        const flatData = {
+          ...values,
+          yearBuilt: toInt(values.yearBuilt),
+          image: imageUrl,
+        };
 
-          if (response.status === 200) {
-            setSuccess(`Flat created successfully!`);
-            setTimeout(() => {
-              navigate("/my-flats");
-            }, 2000);
-          }
+        if (flat) {
+          await updateFlat(flat._id, flatData);
+          toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Flat updated successfully!",
+          });
         } else {
-          const response = await updateFlat(values, imageUrl);
-          console.log("4. FLAT FORM SERVICE: updateFlat response", response);
-          if (response.status === 200) {
-            setSuccess(`Flat updated successfully!`);
-            setTimeout(() => {
-              setUpdated(true);
-            }, 1500);
-          }
+          await createFlat(flatData);
+          toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Flat created successfully!",
+          });
         }
-      } catch (err) {
-        console.error("Login failed:", err);
-        setError(
-          err.response?.data?.message ||
-            "Oops! Something went wrong. Please try again."
-        );
+
+        setUpdated((prev) => !prev);
+        if (onClose) onClose();
+      } catch (error) {
+        console.error("Error saving flat:", error);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Something went wrong. Please try again.",
+        });
       } finally {
         setLoading(false);
-        // setSubmitting(false);
       }
     },
   });
 
-  const handleUploadImage = async ({ files }) => {
-    try {
-      const file = files[0];
-      if (!file) {
-        throw new Error("No file selected.");
-      }
-
-      const { downloadURL, resizedBuffer } = await uploadImage(file, "flat");
-
-      setSuccess("Image uploaded successfully!");
+  const handleUploadImage = (e) => {
+    const file = e.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setSelectedFile(file);
+      setShowCropper(true);
+    } else {
       toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Image uploaded successfully!",
+        severity: "error",
+        summary: "Invalid File",
+        detail: "Please upload a valid image file.",
       });
-
-      console.log("Image URL:", downloadURL);
-
-      // Notify parent component of success
-      formik.setFieldValue("image", downloadURL);
-      setFlatFile(resizedBuffer);
-    } catch (error) {
-      setError(error.message || "Failed to upload image.");
-      console.error("Image upload error:", error);
-
-      // Notify parent component of failure
-      console.error("User image upload error:", error);
     }
   };
-
-  toast.current.show({
-    severity: { error: "error", success: "success" },
-    summary: { error: "Error", success: "Congratulations!" },
-    detail: error || success,
-  });
 
   return (
     <>
@@ -160,7 +138,27 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
         className='w-full flex flex-column gap-3'
       >
         {/* Street Number and Street Name */}
-        <div className='flex gap-3 w-full flex-column md:flex-row'>
+        <div className='grid w-full'>
+          {/* City */}
+          <GeneralInput
+            id='city'
+            name='city'
+            value={formik.values.city}
+            onChange={formik.handleChange}
+            iconClass='user'
+            label='City'
+            type='text'
+            widthClass='col-12 sm:col-4'
+          />
+
+          {formik.touched.city && formik.errors.city ? (
+            <MessageErrors
+              error={formik.errors.city}
+              touched={formik.touched.city}
+            />
+          ) : (
+            <div className='mt-0'></div>
+          )}
           {/* Street Number */}
           <GeneralInput
             id='streetNumber'
@@ -170,6 +168,7 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
             iconClass='hashtag'
             label='Street Number'
             type='number'
+            widthClass='col-4'
           />
 
           {formik.touched.streetNumber && formik.errors.streetNumber ? (
@@ -189,7 +188,7 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
             onChange={formik.handleChange}
             iconPh='MapTrifold'
             label='Street Name'
-            type='number'
+            widthClass='col-8 sm:col-4'
           />
 
           {formik.touched.streetName && formik.errors.streetName ? (
@@ -200,30 +199,6 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
           ) : (
             <div className='mt-0'></div>
           )}
-        </div>
-
-        {/* City and Price */}
-        <div className='flex gap-3 w-full flex-column md:flex-row'>
-          {/* City */}
-          <GeneralInput
-            id='city'
-            name='city'
-            value={formik.values.city}
-            onChange={formik.handleChange}
-            iconClass='user'
-            label='City'
-            type='text'
-          />
-
-          {formik.touched.city && formik.errors.city ? (
-            <MessageErrors
-              error={formik.errors.city}
-              touched={formik.touched.city}
-            />
-          ) : (
-            <div className='mt-0'></div>
-          )}
-
           {/* Price */}
           <GeneralInput
             id='rentPrice'
@@ -233,6 +208,7 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
             iconClass='dollar'
             label='Price'
             type='number'
+            widthClass='col-6 sm:col-4'
           />
 
           {formik.touched.rentPrice && formik.errors.rentPrice ? (
@@ -243,15 +219,12 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
           ) : (
             <div className='mt-0'></div>
           )}
-        </div>
 
-        {/* Year and Date Available */}
-        <div className='flex gap-3 w-full flex-column md:flex-row'>
           {/* Year */}
-          <FloatLabel>
-            <div className='p-inputgroup'>
+          <FloatLabel className='col-6 sm:col-4'>
+            <div className='p-inputgroup w-full'>
               <span className='p-inputgroup-addon bg-transparent z-5 calendar-icon'>
-                <CalendarBlank />
+                <CalendarBlank className='text-400' />
               </span>
               <Calendar
                 inputId='yearBuilt'
@@ -259,19 +232,19 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
                 value={formik.values.yearBuilt}
                 // onChange={(e) => handleBirthdayChange(e.value)}
                 onChange={(e) =>
-                  formik.setFieldValue("yearBuilt", toString(e.value))
+                  formik.setFieldValue("yearBuilt", toInt(e.value))
                 }
                 inputStyle={{
-                  borderLeft: "none",
                   borderRadius: "30px",
                   paddingInlineStart: "2.75rem",
                 }}
-                minDate={minYear}
-                maxDate={maxYear}
+                yearRange='1800:2024'
+                // minDate={minYear}
+                // maxDate={maxYear}
                 view='year'
                 dateFormat='yy'
                 // yearNavigator
-                className='input-main w-full'
+                className='input-number w-full'
               />
             </div>
             <label htmlFor='yearBuilt' className='left-3 text-400'>
@@ -287,14 +260,12 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
           ) : (
             <div className='mt-0'></div>
           )}
-        </div>
 
-        {/* Date Available */}
-        <div className='flex gap-3 w-full flex-column md:flex-row'>
-          <FloatLabel>
-            <div className='p-inputgroup'>
+          {/* Date Available */}
+          <FloatLabel className='col-6 sm:col-4'>
+            <div className='p-inputgroup w-full'>
               <span className='p-inputgroup-addon bg-transparent z-5 calendar-icon'>
-                <CalendarStar />
+                <CalendarStar className='text-400' />
               </span>
               <Calendar
                 inputId='dateAvailable'
@@ -303,14 +274,13 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
                 // onChange={(e) => handleBirthdayChange(e.value)}
                 onChange={(e) => formik.setFieldValue("dateAvailable", e.value)}
                 inputStyle={{
-                  borderLeft: "none",
                   borderRadius: "30px",
                   paddingInlineStart: "2.75rem",
                 }}
                 minDate={minDate}
                 maxDate={maxDate}
                 dateFormat='dd/mm/yy'
-                className='input-main w-full'
+                className='input-number w-full'
               />
             </div>
             <label htmlFor='dateAvailable' className='left-3 text-400'>
@@ -326,10 +296,6 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
           ) : (
             <div className='mt-0'></div>
           )}
-        </div>
-
-        {/* Rooms and Bathrooms */}
-        <div className='flex gap-3 w-full flex-column md:flex-row'>
           {/* Rooms */}
           <GeneralInput
             id='rooms'
@@ -339,6 +305,7 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
             iconPh='Bed'
             label='Rooms'
             type='number'
+            widthClass='col-6 sm:col-4'
           />
 
           {formik.touched.rooms && formik.errors.rooms ? (
@@ -359,6 +326,7 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
             iconPh='Bathtub'
             label='Bathrooms'
             type='number'
+            widthClass='col-6 sm:col-4'
           />
 
           {formik.touched.bathrooms && formik.errors.bathrooms ? (
@@ -369,10 +337,7 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
           ) : (
             <div className='mt-0'></div>
           )}
-        </div>
 
-        {/* Area Size and Price */}
-        <div className='flex gap-3 w-full flex-column md:flex-row'>
           {/* Area Size */}
           <GeneralInput
             id='areaSize'
@@ -382,6 +347,7 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
             iconClass='expand'
             label='Area Size'
             type='number'
+            widthClass='col-6 sm:col-4'
           />
 
           {formik.touched.areaSize && formik.errors.areaSize ? (
@@ -394,7 +360,7 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
           )}
 
           {/* Has AC */}
-          <div className='w-full justify-content-start align-items-center gap-2 flex '>
+          <div className='col-6 sm:col-4 justify-content-start align-items-center gap-2 flex '>
             <InputSwitch
               checked={formik.values.hasAc}
               onChange={(e) => formik.setFieldValue("hasAc", e.value)}
@@ -402,39 +368,95 @@ const FlatForm = (initialFlat, isEditing = false, setUpdated) => {
             />
             <label htmlFor='hasAC'>Has AC</label>
           </div>
-        </div>
 
-        <FileUpload
-          name='demo[]'
-          multiple={false}
-          accept='image/*'
-          maxFileSize={2000000}
-          emptyTemplate={
-            <p className='m-0'>Drag and drop images to here to upload.</p>
-          }
-          chooseLabel={initialFlat ? "Update Photo" : "Upload Photo"}
-          customUpload
-          auto
-          uploadHandler={handleUploadImage}
-        />
-
-        <LoadingSkeleton loading={loading}>
-          <MainButton
-            label={!initialFlat ? "Create Flat" : "Update Flat"}
-            type='submit'
-            disabled={loading}
+          <FileUpload
+            name='demo[]'
+            multiple={false}
+            accept='image/*'
+            maxFileSize={2000000}
+            emptyTemplate={
+              <p className='m-0'>Drag and drop images here to upload.</p>
+            }
+            chooseLabel={flat ? "Update Photo" : "Upload Photo"}
+            customUpload
+            auto
+            uploadHandler={handleUploadImage}
+            onBeforeUpload={() => console.log("Before upload triggered")}
+            onUpload={() => console.log("Upload successful")}
+            onError={(e) => console.error("Upload error:", e)}
+            className='col-12'
           />
-        </LoadingSkeleton>
+
+          {selectedFile && showCropper && (
+            <div className='modal-overlay'>
+              <div className='modal-content'>
+                <h3>Crop Your Image</h3>
+                <ImageCropper
+                  file={selectedFile}
+                  aspect={16 / 9} // Pass aspect directly
+                  onComplete={async (croppedBlob) => {
+                    try {
+                      const processedFile = new File(
+                        [croppedBlob],
+                        selectedFile.name,
+                        {
+                          type: selectedFile.type,
+                        }
+                      );
+
+                      const { downloadURL } = await uploadFlatImageFirebase(
+                        processedFile,
+                        "user"
+                      );
+
+                      formik.setFieldValue("image", downloadURL);
+                      setShowCropper(false);
+                      setSelectedFile(null);
+
+                      toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: "Image uploaded successfully!",
+                      });
+                    } catch (error) {
+                      console.error("Error uploading cropped image:", error);
+                      toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: "Failed to upload cropped image.",
+                      });
+                    }
+                  }}
+                />
+                <MainButton
+                  label='Cancel'
+                  onClick={() => {
+                    setShowCropper(false);
+                    setSelectedFile(null);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* <LoadingSkeleton loading={loading}> */}
+          <MainButton
+            label={!flat ? "Create Flat" : "Update Flat"}
+            type='submit'
+            loading={loading}
+            // disabled={loading}
+          />
+          {/* </LoadingSkeleton> */}
+        </div>
       </form>
     </>
   );
 };
 
 FlatForm.propTypes = {
-  flatId: PropTypes.string,
-  initialFlat: PropTypes.object,
-  isEditing: PropTypes.bool,
-  onFormSubmit: PropTypes.func,
+  flat: PropTypes.object,
+  onClose: PropTypes.func,
+  setUpdated: PropTypes.func,
 };
 
 export default FlatForm;
