@@ -21,6 +21,7 @@ export const logoutApi = async () => {
 };
 
 export const registerApi = async (userData) => {
+  console.log("REGISTER API userData", userData);
   const response = await axiosInstance.post("/auth/register", userData); // Raw API interaction
   console.log("REGISTER API response.data", response.data);
   if (!response.data) {

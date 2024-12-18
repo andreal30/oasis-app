@@ -11,15 +11,20 @@ import App from "./App.jsx";
 import { AuthProvider } from "./contexts/authContext.jsx";
 import { RouterProvider } from "react-router-dom";
 import router from "./components/Path/router.jsx";
+// import { GoogleOAuthProvider } from "@react-oauth/google";
+
+// const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <RouterProvider router={router}>
+      {/* <GoogleOAuthProvider clientId={clientId}> */}
       <AuthProvider>
         <PrimeReactProvider value={{ ripple: true }}>
           <App />
         </PrimeReactProvider>
       </AuthProvider>
+      {/* </GoogleOAuthProvider> */}
     </RouterProvider>
   </StrictMode>
 );
