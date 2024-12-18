@@ -29,7 +29,7 @@ const FlatList = ({ flats, onFlatDeleted, setUpdated, loading }) => {
         <div key={index} className='col-12 md:col-6 lg:col-4'>
           <FlatItem
             flat={flat}
-            onDeleteRequest={handleDeleteRequest}
+            onDeleteRequest={() => handleDeleteRequest(flat._id)}
             setUpdated={setUpdated}
             loading={loading}
           />

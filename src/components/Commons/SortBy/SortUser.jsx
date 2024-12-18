@@ -41,33 +41,43 @@ const SortUser = ({ onSortChange, onClearSort }) => {
           {sortFields.map((field) => (
             <div
               key={field.value}
-              className='flex justify-content-between align-items-center mb-3'
+              className='flex justify-content-between align-items-center'
             >
               <span>{field.label}</span>
               <div className='flex gap-2'>
-                {selectedField === field.value && sortOrder === "asc" && (
+                <div className='flex gap-2'>
                   <IconButton
                     label='Asc'
-                    iconClass='arrow-circle-up text-700'
+                    className='btn-sort'
+                    iconClass={`arrow-circle-up text-main ${
+                      selectedField === field.value && sortOrder === "asc"
+                        ? "text-main-700"
+                        : ""
+                    }`}
                     onClick={() => handleSort(field.value, "asc")}
-                    className='bg-100'
+                    size='small'
+                    outlined
                   />
-                )}
-                {selectedField === field.value && sortOrder === "desc" && (
                   <IconButton
                     label='Desc'
-                    iconClass='arrow-circle-down text-700'
+                    className='btn-sort'
+                    iconClass={`arrow-circle-down text-main ${
+                      selectedField === field.value && sortOrder === "desc"
+                        ? "text-main-700"
+                        : ""
+                    }`}
                     onClick={() => handleSort(field.value, "desc")}
-                    className='bg-100'
+                    size='small'
+                    outlined
                   />
-                )}
+                </div>
               </div>
             </div>
           ))}
         </div>
         <MainButton
           label='Clear Sort'
-          className='w-full mt-2'
+          className='w-full mt-3'
           onClick={handleClearSort}
           type='button'
         />

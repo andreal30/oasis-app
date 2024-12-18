@@ -2,7 +2,6 @@ import axiosInstance from "../utils/axios";
 
 // Fetch a list of flats (supports pagination and filters)
 export const getFlatsApi = async () => {
-  console.log("1. GET FLATS API: fetching flats");
   return axiosInstance.get("/flats");
 };
 

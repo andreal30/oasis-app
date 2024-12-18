@@ -624,9 +624,9 @@ const UserForm = ({ user, onClose, setUpdated }) => {
 };
 
 UserForm.propTypes = {
-  user: PropTypes.object.isRequired,
-  onClose: PropTypes.func.isRequired,
-  setUpdated: PropTypes.func.isRequired,
+  user: PropTypes.object,
+  onClose: PropTypes.func,
+  setUpdated: PropTypes.func,
 };
 
 export default UserForm;

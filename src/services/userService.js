@@ -110,7 +110,7 @@ export const toggleFavourites = async (flatId) => {
   const user = getLocal("loggedInUser");
 
   const isFavourite = user.favouriteFlats.includes(flatId);
-  if (isFavourite) {
+  if (!isFavourite) {
     await removeFlatFavouriteApi(flatId);
   } else {
     await addFlatFavouriteApi(flatId);

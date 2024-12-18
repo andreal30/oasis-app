@@ -16,49 +16,62 @@ import MyFlatsPage from "../../pages/MyFlatsPage";
 import EditFlatPage from "../../pages/EditFlatPage";
 import FlatDetailsPage from "../../pages/FlatDetailsPage";
 import UpdatePasswordPage from "../../pages/UpdatePasswordPage";
+import { PrivateRoute, PublicLayout } from "./PrivateRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
     errorElement: <ErrorPage />,
-    element: (
-      <AuthProvider>
-        <Outlet />
-      </AuthProvider>
-    ),
     children: [
       {
-        // Public routes
-        element: <Outlet />,
+        // Public Routes Layout
+        element: (
+          <AuthProvider>
+            <PublicLayout />
+          </AuthProvider>
+        ),
         children: [
-          { path: "/", element: <LoginPage /> },
-          { path: "/login", element: <LoginPage /> },
-          { path: "/register", element: <RegisterPage /> },
-          { path: "/forgot-password", element: <ForgotPasswordPage /> },
-          { path: "/reset-password/:token", element: <ResetPasswordPage /> },
-        ],
-      },
-      {
-        // Private routes with shared layout
-        element: <RootLayout />,
-        children: [
-          // Dashboard routes
-          { path: "/home", element: <HomePage /> },
-          { path: "/my-flats", element: <MyFlatsPage /> },
-          { path: "/favourites", element: <FavouritesPage /> },
+          {
+            // Public routes
+            element: <Outlet />,
+            children: [
+              { path: "/", element: <LoginPage /> },
+              { path: "/login", element: <LoginPage /> },
+              { path: "/register", element: <RegisterPage /> },
+              { path: "/forgot-password", element: <ForgotPasswordPage /> },
+              {
+                path: "/reset-password/:token",
+                element: <ResetPasswordPage />,
+              },
+            ],
+          },
+          {
+            // Private routes with shared layout
+            element: (
+              <PrivateRoute>
+                <RootLayout />
+              </PrivateRoute>
+            ),
+            children: [
+              // Dashboard routes
+              { path: "/home", element: <HomePage /> },
+              { path: "/my-flats", element: <MyFlatsPage /> },
+              { path: "/favourites", element: <FavouritesPage /> },
 
-          // Flat management routes
-          { path: "/new-flat", element: <NewFlatPage /> },
-          { path: "/flats/edit/:id", element: <EditFlatPage /> },
-          { path: "/flats/:id", element: <FlatDetailsPage /> },
+              // Flat management routes
+              { path: "/new-flat", element: <NewFlatPage /> },
+              { path: "/flats/edit/:id", element: <EditFlatPage /> },
+              { path: "/flats/:id", element: <FlatDetailsPage /> },
 
-          // User management routes
-          { path: "/profile", element: <ProfilePage /> },
-          { path: "/update-profile", element: <UpdateProfilePage /> },
-          { path: "/all-users", element: <AllUsersPage /> },
+              // User management routes
+              { path: "/profile", element: <ProfilePage /> },
+              { path: "/update-profile", element: <UpdateProfilePage /> },
+              { path: "/all-users", element: <AllUsersPage /> },
 
-          // Additional routes as needed
-          { path: "/update-password", element: <UpdatePasswordPage /> },
+              // Additional routes as needed
+              { path: "/update-password", element: <UpdatePasswordPage /> },
+            ],
+          },
         ],
       },
     ],
