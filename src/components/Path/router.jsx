@@ -5,10 +5,10 @@ import ResetPasswordPage from "../../pages/ResetPasswordPage";
 import ProfilePage from "../../pages/ProfilePage";
 import FavouritesPage from "../../pages/FavouritesPage";
 import NewFlatPage from "../../pages/NewFlatPage";
-import LoginPage from "../../pages/LoginPage";
+// import LoginPage from "../../pages/LoginPage";
 import RootLayout from "../../pages/RootLayout";
 import ForgotPasswordPage from "../../pages/ForgotPasswordPage";
-import RegisterPage from "../../pages/RegisterPage";
+// import RegisterPage from "../../pages/RegisterPage";
 import { AuthProvider } from "../../contexts/authContext";
 import AllUsersPage from "../../pages/AllUsersPage";
 import UpdateProfilePage from "../../pages/UpdateProfilePage";
@@ -18,6 +18,10 @@ import FlatDetailsPage from "../../pages/FlatDetailsPage";
 import UpdatePasswordPage from "../../pages/UpdatePasswordPage";
 // import SliderAuth from "../Auth/SliderAuth";
 import { PrivateRoute, PublicLayout } from "./PrivateRoute";
+import LoginRegisterPage from "../../pages/LoginRegisterPage";
+// import { GoogleOAuthProvider } from "@react-oauth/google";
+
+// const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const router = createBrowserRouter([
   {
@@ -28,7 +32,9 @@ const router = createBrowserRouter([
         // Public Routes Layout
         element: (
           <AuthProvider>
+            {/* <GoogleOAuthProvider clientId={clientId}> */}
             <PublicLayout />
+            {/* </GoogleOAuthProvider> */}
           </AuthProvider>
         ),
         children: [
@@ -36,11 +42,11 @@ const router = createBrowserRouter([
             // Public routes
             element: <Outlet />,
             children: [
-              { path: "/", element: <LoginPage /> },
+              { path: "/", element: <LoginRegisterPage /> },
               // { path: "/", element: <SliderAuth /> },
               // { path: "/auth", element: <SliderAuth /> },
-              { path: "/login", element: <LoginPage /> },
-              { path: "/register", element: <RegisterPage /> },
+              { path: "/login", element: <LoginRegisterPage /> },
+              { path: "/register", element: <LoginRegisterPage /> },
               { path: "/forgot-password", element: <ForgotPasswordPage /> },
               {
                 path: "/reset-password/:token",
