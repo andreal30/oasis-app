@@ -16,7 +16,6 @@ import MyFlatsPage from "../../pages/MyFlatsPage";
 import EditFlatPage from "../../pages/EditFlatPage";
 import FlatDetailsPage from "../../pages/FlatDetailsPage";
 import UpdatePasswordPage from "../../pages/UpdatePasswordPage";
-// import SliderAuth from "../Auth/SliderAuth";
 import { PrivateRoute, PublicLayout } from "./PrivateRoute";
 import LoginRegisterPage from "../../pages/LoginRegisterPage";
 // import { GoogleOAuthProvider } from "@react-oauth/google";

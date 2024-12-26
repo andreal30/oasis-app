@@ -74,6 +74,9 @@ const HomePage = () => {
 
   return (
     <>
+      <div className='home-img'>
+        <div>More than just a flat, a place to make your home...</div>
+      </div>
       <MainTitle
         title='Available Flats'
         filterFunction={handleFilterChange}

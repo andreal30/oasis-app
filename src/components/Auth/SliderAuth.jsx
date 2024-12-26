@@ -56,6 +56,9 @@ const SliderAuth = () => {
                 you’re good to go.
               </p>
               <LoginPage />
+              <a href='/forgot-password' className='text-600 mt-2 '>
+                Forgot your password?
+              </a>
             </div>
           </div>
           <div

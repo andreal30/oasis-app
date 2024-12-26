@@ -367,3 +367,31 @@ input:-webkit-autofill {
 form .p-badge.p-badge-warning {
   display: none;
 }
+
+.home-img {
+  background-image: url("https://arriendayvende.com/wp-content/uploads/2022/09/FOTO-1-1155x785.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 60vh;
+  border-radius: 20px;
+  @media (max-width: 768px) {
+    height: 40vh;
+  }
+}
+.home-img div {
+  background-color: rgba(0, 0, 0, 0.503);
+  width: 100%;
+  height: 100%;
+  color: white;
+  font-size: 3rem;
+  text-align: center;
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+}

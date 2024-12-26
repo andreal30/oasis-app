@@ -3,7 +3,7 @@ import { Calendar } from "primereact/calendar";
 import { FileUpload } from "primereact/fileupload";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputSwitch } from "primereact/inputswitch";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import GeneralInput from "../Commons/Inputs/GeneralInput";
 import MainButton from "../Commons/Buttons/MainButton";
@@ -364,13 +364,13 @@ const UserForm = ({ user, onClose, setUpdated }) => {
 
   const isAdministrator = user?.isAdmin || false;
 
-  useEffect(() => {
-    if (registerPath) {
-      console.log("Resetting birthDate");
-      formik.setFieldValue("birthDate", null);
-    }
-    // Only run this effect when `registerPath` changes
-  }, [registerPath, formik]);
+  // useEffect(() => {
+  //   if (registerPath) {
+  //     console.log("Resetting birthDate");
+  //     formik.setFieldValue("birthDate", null);
+  //   }
+  //   // Only run this effect when `registerPath` changes
+  // }, [registerPath, formik]);
 
   return (
     <>
