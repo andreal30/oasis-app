@@ -17,6 +17,7 @@ React:
 - styled-components (maybe)
 - react-time-ago
 - javascript-time-ago
+- @react-oauth/google
 
 search:
 - @commitlint/config-conventional
