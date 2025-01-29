@@ -1,48 +1,68 @@
-import { useEffect, useState } from 'react';
-// Import paths from your created Node backend
+import { useState, useRef } from "react";
+import PropTypes from "prop-types";
+import { InputTextarea } from "primereact/inputtextarea";
+import { Button } from "primereact/button";
+import { addMessage } from "../../api/messagesApi";
+import useAuth from "../../hooks/useAuth";
+import { Toast } from "primereact/toast";
 
-const useMessage = (flatId) => {
-    const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+const MessageForm = ({ flatId }) => {
+    const [message, setMessage] = useState("");
+    const { user } = useAuth();
+    const toast = useRef(null);
 
-    useEffect(() => {
-        const fetchMessages = async () => {
-            setLoading(true);
-            setError(null);
+    const showToast = (severity, summary, detail) => {
+        toast.current.show({ severity, summary, detail });
+    };
 
-            try {
-                // Replace this with a call to your Node backend to fetch messages
-                const fetchedMessages = await fetch(`/api/messages?flatId=${flatId}`).then(res => res.json());
+    const validateMessage = () => {
+        if (!message.trim()) {
+            showToast("warn", "Warning", "Message content cannot be empty.");
+            return false;
+        }
+        return true;
+    };
 
-                // Replace this with a call to your Node backend to fetch user details
-                const messagesWithUserDetails = await Promise.all(
-                    fetchedMessages.map(async (message) => {
-                        const user = await fetch(`/api/users?email=${message.userEmail}`).then(res => res.json());
+    const sendMessage = async () => {
+        try {
+            await addMessage(flatId, {
+                senderId: user.id,
+                content: message.trim(),
+            });
+            setMessage("");
+            showToast("success", "Success", "Message sent successfully.");
+        } catch (error) {
+            showToast("error", "Error", `Failed to send message: ${error.message}`);
+        }
+    };
 
-                        return {
-                            messageId: message.id,
-                            ...message,
-                            firstName: user.firstName || 'Not Found',
-                            lastName: user.lastName || 'Not Found',
-                            profile: user.profile || 'Not Found',
-                        };
-                    })
-                );
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (validateMessage()) {
+            await sendMessage();
+        }
+    };
 
-                setMessages(messagesWithUserDetails);
-            } catch (error) {
-                setError('Failed to fetch messages and users');
-                console.error('Error fetching messages:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchMessages();
-    }, [flatId]);
-
-    return { messages, loading, error };
+    return (
+        <div className="message-form">
+            <Toast ref={toast} />
+            <form onSubmit={handleSubmit}>
+                <InputTextarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={5}
+                    cols={30}
+                    placeholder="Type your message here..."
+                    className="message-input"
+                />
+                <Button label="Send Message" type="submit" className="send-button" />
+            </form>
+        </div>
+    );
 };
 
-export default useMessage;
+MessageForm.propTypes = {
+    flatId: PropTypes.string.isRequired,
+};
+
+export default MessageForm;
